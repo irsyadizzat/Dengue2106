@@ -224,12 +224,12 @@ namespace Dengue.Controllers
             catch (WebException we)
             {
                 // Step 2b: If response status != 200
-                Stream receiveStream = we.Response.GetResponseStream();
-                StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
-                // print the error received from Server
-                Console.WriteLine("Error Encountered - ");
-                System.Diagnostics.Debug.WriteLine("Error Encountered - ");
-                Console.WriteLine(readStream.ReadToEnd());
+                //Stream receiveStream = we.Response.GetResponseStream();
+                //StreamReader readStream = new StreamReader(receiveStream, Encoding.UTF8);
+                //// print the error received from Server
+                //Console.WriteLine("Error Encountered - ");
+                //System.Diagnostics.Debug.WriteLine("Error Encountered - ");
+                //Console.WriteLine(readStream.ReadToEnd());
             }
             catch (NullReferenceException)
             {
