@@ -10,7 +10,7 @@ namespace Dengue.DAL
 {
     public class DengueContext : DbContext
     {
-        public DengueContext() : base("DengueData")
+        public DengueContext() : base("dengue2106_db")
         {
 
         }
