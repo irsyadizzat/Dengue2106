@@ -249,7 +249,7 @@ namespace Dengue.Controllers
             Weathergateway.getWeatherData();
             DengueCHgateway.uploadDengueCH();
             //ViewData["noDengueCase"] = denguecases;
-
+            //tetek
             //return View(DengueClustergateway.SelectAll());
 
             return View();
