@@ -17,18 +17,14 @@ namespace Dengue.Models
         public string Contact_No { get; set; }
         public string Email { get; set; }
         public string Location { get; set; }
-        public decimal Longitude { get; set; }
-        public decimal Latitude { get; set; }
+        public string Longitude { get; set; }
+        public string Latitude { get; set; }
         public string Details { get; set; }
+        public int No_of_Cases { get; set; }
+        public string Reported_Date { get; set; }
 
-        [DataType(DataType.Date)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
-        public DateTime Reported_Date { get; set; }
+        //public bool Status { get; set; }
 
-        public bool Status { get; set; }
-
-        [DataType(DataType.Date)]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
-        public DateTime Upload_Date { get; set; }
+        public string Upload_Date { get; set; }
     }
 }

@@ -22,6 +22,7 @@ namespace Dengue.Controllers
         private WeatherGateway Weathergateway = new WeatherGateway();
         private DengueContext db = new DengueContext();
         private DengueCHGateway DengueCHgateway = new DengueCHGateway();
+        private BHGateway BHgateway = new BHGateway();
 
         IEnumerable<DengueCluster> dengueClusterAll;
         IEnumerable<DengueCaseHistory> dengueCHAll;
@@ -35,6 +36,8 @@ namespace Dengue.Controllers
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
             Weathergateway.getWeatherData();
             DengueCHgateway.uploadDengueCH();
+            BHgateway.uploadBreedingHabitat();
+            BHgateway.getDate();
             //ViewData["noDengueCase"] = denguecases;
 
             //return View(DengueClustergateway.SelectAll());
