@@ -19,5 +19,6 @@ namespace Dengue.Models
         public string Coordinates { get; set; }
         public string Alert_Level { get; set; }
         public string Upload_Date { get; set; }
+        public string zone { get; set; }
     }
 }

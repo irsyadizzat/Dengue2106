@@ -126,6 +126,7 @@ namespace Dengue.DAL
                     dengueCluster.Coordinates = coordinates[j];
                     dengueCluster.Alert_Level = "0";
                     dengueCluster.Upload_Date = webDate;
+                    dengueCluster.zone = "test";
                     DengueClustergateway.Insert(dengueCluster);
                     db.SaveChanges();
                 }
@@ -163,6 +164,46 @@ namespace Dengue.DAL
 
             return webDate;
 
+        }
+
+        public List<string> getLongitude()
+        {
+            List<string> longitude = new List<string>();
+
+            WebClient web = new WebClient();
+            String html = web.DownloadString("https://data.gov.sg/dataset/e7536645-6126-4358-b959-a02b22c6c473/resource/c1d04c0e-3926-40bc-8e97-2dfbb1c51c3a/download/DENGUECLUSTER.kml");
+
+            MatchCollection m3 = Regex.Matches(html, @"<coordinates>\s*(.+?)\s*</coordinates>", RegexOptions.Singleline);
+
+            //coordinates
+            foreach (Match m in m3)
+            {
+
+                string test = m.Groups[1].Value;
+                string[] test2 = test.Split(new string[] { "," }, StringSplitOptions.None);
+                longitude.Add(test2[0]);
+            }
+            return longitude;
+        }
+
+        public List<string> getLatitude()
+        {
+
+            List<string> latitude = new List<string>();
+            WebClient web = new WebClient();
+            String html = web.DownloadString("https://data.gov.sg/dataset/e7536645-6126-4358-b959-a02b22c6c473/resource/c1d04c0e-3926-40bc-8e97-2dfbb1c51c3a/download/DENGUECLUSTER.kml");
+
+            MatchCollection m3 = Regex.Matches(html, @"<coordinates>\s*(.+?)\s*</coordinates>", RegexOptions.Singleline);
+
+            //coordinates
+            foreach (Match m in m3)
+            {
+
+                string test = m.Groups[1].Value;
+                string[] test2 = test.Split(new string[] { "," }, StringSplitOptions.None);
+                latitude.Add(test2[1]);
+            }
+            return latitude;
         }
 
     }
