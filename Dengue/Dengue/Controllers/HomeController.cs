@@ -35,10 +35,10 @@ namespace Dengue.Controllers
             System.Diagnostics.Debug.WriteLine("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
             
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
-            Weathergateway.getWeatherData();
-            DengueCHgateway.uploadDengueCH();
+       //     Weathergateway.getWeatherData();
+         //   DengueCHgateway.uploadDengueCH();
            // BHgateway.uploadBreedingHabitat();
-            BHgateway.getDate();
+            
             List<string> longitude =  DengueClustergateway.getLongitude();
             List<string> latitude = DengueClustergateway.getLatitude();
             //ViewData["noDengueCase"] = denguecases;
@@ -56,23 +56,47 @@ namespace Dengue.Controllers
         }
 
         [HttpPost]
-        public ActionResult StoreRegion(String[] passedRegionArray)
+        public ActionResult StoreRegion(String[][] passedRegionArray)
         {
             System.Diagnostics.Debug.WriteLine("into store region method");
-            //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
+
+            System.Diagnostics.Debug.WriteLine(passedRegionArray.GetLength(0));
+            System.Diagnostics.Debug.WriteLine(passedRegionArray.GetLength(1));
             //logic to store to database
-            DengueClustergateway.uploadDengueCluster(passedRegionArray);
+            //DengueClustergateway.uploadDengueCluster(passedRegionArray);
             System.Diagnostics.Debug.WriteLine("finish store region method");
             return RedirectToAction("index","home");
         }
 
         [HttpPost]
-        public ActionResult StoreHabitat(String[] passedHabitatArray)
+        public ActionResult StoreHabitat(String[][] passedHabitatArray)
         {
             System.Diagnostics.Debug.WriteLine("into store region method");
             //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
             //logic to store to database
-            BHgateway.uploadBreedingHabitat(passedHabitatArray);
+           // BHgateway.uploadBreedingHabitat(passedHabitatArray);
+            System.Diagnostics.Debug.WriteLine("finish store region method");
+            return RedirectToAction("index", "home");
+        }
+
+        [HttpPost]
+        public ActionResult StoreRegionLocation(String[] passedRegionLocationNameArray)
+        {
+            System.Diagnostics.Debug.WriteLine("into store region method");
+            //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
+            //logic to store to database
+            
+            System.Diagnostics.Debug.WriteLine("finish store region method");
+            return RedirectToAction("index", "home");
+        }
+
+        [HttpPost]
+        public ActionResult StoreHabitatLocation(String[] passedHabitatLocationNameArray)
+        {
+            System.Diagnostics.Debug.WriteLine("into store region method");
+            //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
+            //logic to store to database
+            
             System.Diagnostics.Debug.WriteLine("finish store region method");
             return RedirectToAction("index", "home");
         }

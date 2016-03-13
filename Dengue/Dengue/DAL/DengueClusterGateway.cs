@@ -44,7 +44,7 @@ namespace Dengue.DAL
 
         }
 
-        public void uploadDengueCluster(String[] passedRegionArray)
+        public void uploadDengueCluster(String[][] passedRegionArray)
         {
      //       string webDate = getDate();
 
@@ -120,13 +120,23 @@ namespace Dengue.DAL
 
                 for (int j = 0; j < locations.Count; j++)
                 {
+
                     dengueCluster.Description = locations[j];
                     dengueCluster.No_of_Cases = Int32.Parse(cases[j]);
                     dengueCluster.Hyperlink = hyperlink[j];
                     dengueCluster.Coordinates = coordinates[j];
                     dengueCluster.Alert_Level = "0";
                     dengueCluster.Upload_Date = "test";
-                    dengueCluster.zone = passedRegionArray[j];
+                    for (int row = 0; row < passedRegionArray.GetLength(0); row++)
+                    {
+                        for (int col = 0; col == passedRegionArray.GetLength(1); col++)
+                        {
+                            dengueCluster.zone = passedRegionArray[row][col];
+                            dengueCluster.location = passedRegionArray[row][col + 1];
+                           
+                        }
+                    }
+                
                     DengueClustergateway.Insert(dengueCluster);
                     db.SaveChanges();
                 }

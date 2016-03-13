@@ -23,14 +23,6 @@
             };
             map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
 
-            /*var geocoder = new google.maps.Geocoder();
-            var pos = new google.maps.LatLng(1.35126758190324, 103.8718993098798);
-            geocoder.geocode({ 'location': pos }, function (results, status) {
-                if (results[0]) {
-                    alert(results[0].formatted_address);
-                }
-            });*/
-
             var georssLayer = new google.maps.KmlLayer({
                 url: 'https://data.gov.sg/dataset/e7536645-6126-4358-b959-a02b22c6c473/resource/c1d04c0e-3926-40bc-8e97-2dfbb1c51c3a/download/DENGUECLUSTER.kml'
             });
@@ -43,6 +35,9 @@
         $(document).ready(function () {
             var regionArray = [];
             var habitatArray = [];
+            var regionLocationArray = [];
+            var habitatLocationArray = [];
+
             var longArray = @Html.Raw(Json.Encode(@ViewBag.Longitude));
             var latArray = @Html.Raw(Json.Encode(@ViewBag.Latitude));
 
@@ -51,13 +46,20 @@
 
             for(var i = 0; i < longArray.length; i++){
                 var result = coordinatesToRegion(latArray[i],longArray[i]);
+                var streetResult = coordinatesToName(latArray[i],longArray[i]);
+
                 regionArray.push(result);
+                regionLocationArray.push(streetResult);
             }
 
             for(var k = 0; k < hLongArray.length; k++){
                 var result3 = coordinatesToRegion(hLatArray[k],hLongArray[k]);
+                var streetResult2 = coordinatesToName(latArray[k],longArray[k]);
+                
                 habitatArray.push(result3);
+                habitatLocationArray.push(streetResult2);
             }
+
 
             var regionAjax = function(regionArray){
                 $.ajax({
@@ -79,11 +81,45 @@
                 });
             }
 
+            var regionLocationAjax = function(regionLocationArray){
+                $.ajax({
+                    type: "POST",
+                    traditional: true,
+                    url: "StoreRegionLocation",
+                    data: { "passedRegionLocationNameArray": regionLocationArray },
+                    success: function (data) { alert("SUCCESS"); }
+                });
+            }
+
+            var habitatLocationAjax = function(habitatLocationArray){
+                $.ajax({
+                    type: "POST",
+                    traditional: true,
+                    url: "StoreHabitatLocation",
+                    data: { "passedHabitatLocationNameArray": habitatLocationArray },
+                    success: function (data) { alert("SUCCESS"); }
+                });
+            }
+
             regionAjax(regionArray);
             habitatAjax(habitatArray);
-            alert("hi");
+            regionLocationAjax(regionLocationArray);
+            habitatLocationAjax(habitatLocationArray);
         });
 
+        function coordinatesToName(lat,lng){
+
+            var streetName;
+
+            var geocoder = new google.maps.Geocoder();
+            var pos = new google.maps.LatLng(lat, lng);
+            geocoder.geocode({ 'location': pos }, function (results, status) {
+                if (results[0]) {
+                    streetName = results[0].formatted_address
+                }
+            });
+            return streetName;
+        }
 
         function coordinatesToRegion(lat, lng) {
 

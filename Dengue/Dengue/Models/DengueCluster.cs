@@ -15,6 +15,7 @@ namespace Dengue.Models
 
         public string Description { get; set; }
         public int No_of_Cases { get; set; }
+        public string location { get; set; }
         public string Hyperlink { get; set; }
         public string Coordinates { get; set; }
         public string Alert_Level { get; set; }

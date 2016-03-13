@@ -17,7 +17,7 @@ namespace Dengue.DAL
         List<string> latitude = new List<string>();
         List<string> cases = new List<string>();
 
-        public void uploadBreedingHabitat(String[] passedHabitatArray)
+        public void uploadBreedingHabitat(String[][] passedHabitatArray)
         {
        //     string webDate = getDate();
 
@@ -191,8 +191,18 @@ namespace Dengue.DAL
                     bH.No_of_Cases = Int32.Parse(cases[j]);               
                     bH.Reported_Date = "unknown";
                     bH.Upload_Date = "test";
-                    bH.zone = passedHabitatArray[j];
-                    BHgateway.Insert(bH);
+
+                for (int row = 0; row < passedHabitatArray.GetLength(0); row++)
+                {
+                    for (int col = 0; col == passedHabitatArray.GetLength(1); col++)
+                    {
+                        bH.zone = passedHabitatArray[row][col];
+                        bH.Location = passedHabitatArray[row][col + 1];
+
+                    }
+                }
+
+                BHgateway.Insert(bH);
                     db.SaveChanges();
                 }
          //   }
