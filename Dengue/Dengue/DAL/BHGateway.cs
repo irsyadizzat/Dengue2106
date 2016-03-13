@@ -416,26 +416,18 @@ namespace Dengue.DAL
             
             
             List<string> location = new List<string>();
-            WebClient web = new WebClient();
-            int j = 0;
+        
             for (int i = 0; i < saveLongitude.Count(); i++)
             {
-                String html = web.DownloadString("https://maps.googleapis.com/maps/api/geocode/xml?latlng=" + saveLatitude[i] + "," + saveLongitude[i] + "&sensor=false");
+                String url = "https://maps.googleapis.com/maps/api/geocode/xml?latlng=" + saveLatitude[i] + "," + saveLongitude[i] + "&sensor=false";
+                HttpWebRequest urlRequest = (HttpWebRequest)WebRequest.Create(url);
+                HttpWebResponse urlResponse = (HttpWebResponse)urlRequest.GetResponse();
+                Stream urlReceiveStream = urlResponse.GetResponseStream();
+                StreamReader urlReadStream = new StreamReader(urlReceiveStream, Encoding.UTF8);
+                XDocument urlXDoc = XDocument.Load(urlReadStream);
 
-                MatchCollection loc = Regex.Matches(html, @"<formatted_address>\s*(.+?)\s*</formatted_address>", RegexOptions.Singleline);
+                location.Add((string)urlXDoc.XPathSelectElement("/GeocodeResponse/result/formatted_address"));
 
-                foreach (Match m in loc)
-                {
-                    if (j == 0)
-                    {
-                        string temp = m.Groups[1].Value;
-                        location.Add(temp);
-                        j = 1;
-                    }
-                   
-                  
-                }
-                j = 0;
             }
 
 
