@@ -22,7 +22,7 @@ namespace Dengue.Models
         public string Details { get; set; }
         public int No_of_Cases { get; set; }
         public string Reported_Date { get; set; }
-
+        public string zone { get; set; }
         //public bool Status { get; set; }
 
         public string Upload_Date { get; set; }

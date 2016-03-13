@@ -17,20 +17,20 @@ namespace Dengue.DAL
         List<string> latitude = new List<string>();
         List<string> cases = new List<string>();
 
-        public void uploadBreedingHabitat()
+        public void uploadBreedingHabitat(String[] passedHabitatArray)
         {
-            string webDate = getDate();
+       //     string webDate = getDate();
 
             IEnumerable<BreedingHabitat> data = BHgateway.SelectAll();
 
-            var e = data.First();
-            string databaseDate = e.Upload_Date;
+         //   var e = data.First();
+         //   string databaseDate = e.Upload_Date;
 
 
 
 
-            if (!webDate.Equals(databaseDate))
-            {
+          //  if (!webDate.Equals(databaseDate))
+          //  {
                 //Remove data before inserting
                 foreach (BreedingHabitat BH in data)
                 {
@@ -190,11 +190,12 @@ namespace Dengue.DAL
                     bH.Details = "AEDES!";
                     bH.No_of_Cases = Int32.Parse(cases[j]);               
                     bH.Reported_Date = "unknown";
-                    bH.Upload_Date = webDate;
+                    bH.Upload_Date = "test";
+                    bH.zone = passedHabitatArray[j];
                     BHgateway.Insert(bH);
                     db.SaveChanges();
                 }
-            }
+         //   }
 
 
         }

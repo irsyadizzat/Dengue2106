@@ -42,21 +42,45 @@
         
         $(document).ready(function () {
             var regionArray = [];
+            var habitatArray = [];
             var longArray = @Html.Raw(Json.Encode(@ViewBag.Longitude));
             var latArray = @Html.Raw(Json.Encode(@ViewBag.Latitude));
+
+            var hLongArray = @Html.Raw(Json.Encode(@ViewBag.hLongitude));
+            var hLatArray = @Html.Raw(Json.Encode(@ViewBag.hLatitude));
 
             for(var i = 0; i < longArray.length; i++){
                 var result = coordinatesToRegion(latArray[i],longArray[i]);
                 regionArray.push(result);
             }
 
-            $.ajax({
-                type: "POST",
-                traditional: true,
-                url: "StoreRegion",
-                data: { passedRegionArray: regionArray },
-                success: function (data) { alert("SUCCESS"); }
-            });
+            for(var k = 0; k < hLongArray.length; k++){
+                var result3 = coordinatesToRegion(hLatArray[k],hLongArray[k]);
+                habitatArray.push(result3);
+            }
+
+            var regionAjax = function(regionArray){
+                $.ajax({
+                    type: "POST",
+                    traditional: true,
+                    url: "StoreRegion",
+                    data: { "passedRegionArray": regionArray },
+                    success: function (data) { alert("SUCCESS"); }
+                });
+            }
+
+            var habitatAjax = function(habitatArray){
+                $.ajax({
+                    type: "POST",
+                    traditional: true,
+                    url: "StoreHabitat",
+                    data: { "passedHabitatArray": habitatArray },
+                    success: function (data) { alert("SUCCESS"); }
+                });
+            }
+
+            regionAjax(regionArray);
+            habitatAjax(habitatArray);
             alert("hi");
         });
 

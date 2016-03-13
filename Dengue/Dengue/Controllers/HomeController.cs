@@ -37,13 +37,19 @@ namespace Dengue.Controllers
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
             Weathergateway.getWeatherData();
             DengueCHgateway.uploadDengueCH();
-            BHgateway.uploadBreedingHabitat();
+           // BHgateway.uploadBreedingHabitat();
             BHgateway.getDate();
             List<string> longitude =  DengueClustergateway.getLongitude();
             List<string> latitude = DengueClustergateway.getLatitude();
             //ViewData["noDengueCase"] = denguecases;
+            List<string> hlongitude = BHgateway.getLongitude();
+            List<string> hlatitude = BHgateway.getLatitude();
+
             ViewBag.Longitude = longitude;
             ViewBag.Latitude = latitude;
+
+            ViewBag.hLongitude = hlongitude;
+            ViewBag.hLatitude = hlatitude;
             //return View(DengueClustergateway.SelectAll());
 
             return View();
@@ -52,11 +58,23 @@ namespace Dengue.Controllers
         [HttpPost]
         public ActionResult StoreRegion(String[] passedRegionArray)
         {
-            System.Diagnostics.Debug.WriteLine("ASDASDSAD@$@$@$");
+            System.Diagnostics.Debug.WriteLine("into store region method");
+            //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
             //logic to store to database
             DengueClustergateway.uploadDengueCluster(passedRegionArray);
-            System.Diagnostics.Debug.WriteLine("OJAWFJIOASFIOJSAJIFOJSIOAF");
-            return RedirectToAction("home","index");
+            System.Diagnostics.Debug.WriteLine("finish store region method");
+            return RedirectToAction("index","home");
+        }
+
+        [HttpPost]
+        public ActionResult StoreHabitat(String[] passedHabitatArray)
+        {
+            System.Diagnostics.Debug.WriteLine("into store region method");
+            //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
+            //logic to store to database
+            BHgateway.uploadBreedingHabitat(passedHabitatArray);
+            System.Diagnostics.Debug.WriteLine("finish store region method");
+            return RedirectToAction("index", "home");
         }
 
         // GET: DengueClusters
