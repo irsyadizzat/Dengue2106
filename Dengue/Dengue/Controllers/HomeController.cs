@@ -13,6 +13,7 @@ using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Text;
+using System.Net.Mail;
 
 namespace Dengue.Controllers
 {
@@ -41,6 +42,15 @@ namespace Dengue.Controllers
             //ViewData["noDengueCase"] = denguecases;
 
             //return View(DengueClustergateway.SelectAll());
+
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Index(String[] passedRegionArray)
+        {
+
+
 
             return View();
         }
@@ -109,10 +119,24 @@ namespace Dengue.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult ContactUs(string name,string contactNo,string email,string description)
         {
-            string test = name;
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(email);
+                mail.To.Add("dengue@ttgy.sg");
+                mail.Subject = "Dengue Contact Us - New Case";
+                mail.Body = "Name: " + name + "<br><br>E-mail Address: "+ email +"<br><br>Contact Number: " + contactNo + "<br><br>Description: <br><br>" + description;
+                mail.IsBodyHtml = true;
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                {
+                    smtp.Credentials = new NetworkCredential("dengue@ttgy.sg", "sexybeast123!");
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                    ViewBag.Data = "sent";
+                }
+            }
             return View();
         }
     }
