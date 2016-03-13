@@ -32,24 +32,27 @@ namespace Dengue.Controllers
         // GET: DengueClusters
         public ActionResult Index()
         {
-            System.Diagnostics.Debug.WriteLine("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+            //System.Diagnostics.Debug.WriteLine("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
             
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
-       //     Weathergateway.getWeatherData();
-         //   DengueCHgateway.uploadDengueCH();
-           // BHgateway.uploadBreedingHabitat();
-            
-            List<string> longitude =  DengueClustergateway.getLongitude();
-            List<string> latitude = DengueClustergateway.getLatitude();
-            //ViewData["noDengueCase"] = denguecases;
-            List<string> hlongitude = BHgateway.getLongitude();
-            List<string> hlatitude = BHgateway.getLatitude();
+            //     Weathergateway.getWeatherData();
+            //   DengueCHgateway.uploadDengueCH();
+          //  List<string> hlongitude = BHgateway.getlocation();
+            BHgateway.uploadBreedingHabitat();
+            //    DengueClustergateway.uploadDengueCluster();
 
-            ViewBag.Longitude = longitude;
-            ViewBag.Latitude = latitude;
 
-            ViewBag.hLongitude = hlongitude;
-            ViewBag.hLatitude = hlatitude;
+            //List<string> longitude =  DengueClustergateway.getLongitude();
+            //List<string> latitude = DengueClustergateway.getLatitude();
+            ////ViewData["noDengueCase"] = denguecases;
+            //List<string> hlongitude = BHgateway.getLongitude();
+            //List<string> hlatitude = BHgateway.getLatitude();
+
+            //ViewBag.Longitude = longitude;
+            //ViewBag.Latitude = latitude;
+
+            //ViewBag.hLongitude = hlongitude;
+            //ViewBag.hLatitude = hlatitude;
             //return View(DengueClustergateway.SelectAll());
 
             return View();

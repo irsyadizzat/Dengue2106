@@ -6,6 +6,10 @@ using Dengue.Models;
 using System.Data.Entity;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.IO;
+using System.Text;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace Dengue.DAL
 {
@@ -15,27 +19,28 @@ namespace Dengue.DAL
         List<string> coordinates = new List<string>();
         List<string> longitude = new List<string>();
         List<string> latitude = new List<string>();
+
         List<string> cases = new List<string>();
 
-        public void uploadBreedingHabitat(String[][] passedHabitatArray)
+        public void uploadBreedingHabitat()
         {
-       //     string webDate = getDate();
+            //     string webDate = getDate();
 
             IEnumerable<BreedingHabitat> data = BHgateway.SelectAll();
 
-         //   var e = data.First();
-         //   string databaseDate = e.Upload_Date;
+            //   var e = data.First();
+            //   string databaseDate = e.Upload_Date;
+            List<string> region = coordinatesToRegion();
+            List<string> realLocation = getlocation();
 
 
-
-
-          //  if (!webDate.Equals(databaseDate))
-          //  {
-                //Remove data before inserting
-                foreach (BreedingHabitat BH in data)
-                {
+            //  if (!webDate.Equals(databaseDate))
+            //  {
+            //Remove data before inserting
+            foreach (BreedingHabitat BH in data)
+            {
                 BHgateway.Delete(BH.BH_ID);
-                }
+            }
 
             WebClient web = new WebClient();
             String html = web.DownloadString("https://data.gov.sg/dataset/bbef5ace-4ac5-494a-a385-07c5acff0ae4/resource/9f05bb14-a9df-4596-b8a2-cdf821b788c6/download");
@@ -179,33 +184,23 @@ namespace Dengue.DAL
 
             BreedingHabitat bH = new BreedingHabitat();
 
-                for (int j = 0; j < coordinates.Count; j++)
-                {
-                    bH.Reporter_Name = "Izzat";
-                    bH.Contact_No = "96938353";
-                    bH.Email = "test.com";
-                    bH.Location = "somewhere";
-                    bH.Longitude = longitude[j];
-                    bH.Latitude = latitude[j];
-                    bH.Details = "AEDES!";
-                    bH.No_of_Cases = Int32.Parse(cases[j]);               
-                    bH.Reported_Date = "unknown";
-                    bH.Upload_Date = "test";
-
-                for (int row = 0; row < passedHabitatArray.GetLength(0); row++)
-                {
-                    for (int col = 0; col == passedHabitatArray.GetLength(1); col++)
-                    {
-                        bH.zone = passedHabitatArray[row][col];
-                        bH.Location = passedHabitatArray[row][col + 1];
-
-                    }
-                }
-
+            for (int j = 0; j < coordinates.Count; j++)
+            {
+                bH.Reporter_Name = "Izzat";
+                bH.Contact_No = "96938353";
+                bH.Email = "test.com";
+                bH.Location = realLocation[j];
+                bH.Longitude = longitude[j];
+                bH.Latitude = latitude[j];
+                bH.Details = "AEDES!";
+                bH.zone = region[j];
+                bH.No_of_Cases = Int32.Parse(cases[j]);
+                bH.Reported_Date = "unknown";
+                bH.Upload_Date = "test";
                 BHgateway.Insert(bH);
-                    db.SaveChanges();
-                }
-         //   }
+                db.SaveChanges();
+            }
+            //   }
 
 
         }
@@ -414,7 +409,82 @@ namespace Dengue.DAL
 
             return getLatitude;
         }
+        public List<string> getlocation()
+        {
+            List<string> saveLongitude = getLongitude();
+            List<string> saveLatitude = getLatitude();
+            
+            
+            List<string> location = new List<string>();
+            WebClient web = new WebClient();
+            int j = 0;
+            for (int i = 0; i < saveLongitude.Count(); i++)
+            {
+                String html = web.DownloadString("https://maps.googleapis.com/maps/api/geocode/xml?latlng=" + saveLatitude[i] + "," + saveLongitude[i] + "&sensor=false");
 
+                MatchCollection loc = Regex.Matches(html, @"<formatted_address>\s*(.+?)\s*</formatted_address>", RegexOptions.Singleline);
+
+                foreach (Match m in loc)
+                {
+                    if (j == 0)
+                    {
+                        string temp = m.Groups[1].Value;
+                        location.Add(temp);
+                        j = 1;
+                    }
+                   
+                  
+                }
+                j = 0;
+            }
+
+
+
+
+            return location;
+        }
+
+        public List<string> coordinatesToRegion()
+        {
+            List<string> saveLongitude = getLongitude();
+            List<string> saveLatitude = getLatitude();
+
+            List<string> region = new List<string>();
+
+            for (int i = 0; i < saveLongitude.Count(); i++)
+            {
+
+
+                //right side of sg
+                if (double.Parse(saveLongitude[i]) > 103.895000)
+                {
+                    region.Add("E");
+                }
+                //left side of sg
+                else if (double.Parse(saveLongitude[i]) < 103.770000)
+                {
+                    region.Add("W");
+
+                }
+                //top part of sg
+                else if (double.Parse(saveLatitude[i]) > 1.390000)
+                {
+                    region.Add("N");
+                }
+                //bottom part of sg
+                else if (double.Parse(saveLatitude[i]) < 1.315)
+                {
+                    region.Add("S");
+                }
+                //central of sg
+                else
+                {
+                    region.Add("C");
+                }
+
+            }
+            return region;
+        }
         public string getDate()
         {
             int i = 0;

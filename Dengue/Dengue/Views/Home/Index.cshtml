@@ -33,12 +33,12 @@
 
         
         $(document).ready(function () {
-            var regionArray = [];
-            var habitatArray = [];
-            var regionLocationArray = [];
-            var habitatLocationArray = [];
+            var regionArray = ["A"];
+            var habitatArray = ["A"];
+            var regionLocationArray = ["A"];
+            var habitatLocationArray = ["A"];
 
-            var longArray = @Html.Raw(Json.Encode(@ViewBag.Longitude));
+            @*var longArray = @Html.Raw(Json.Encode(@ViewBag.Longitude));
             var latArray = @Html.Raw(Json.Encode(@ViewBag.Latitude));
 
             var hLongArray = @Html.Raw(Json.Encode(@ViewBag.hLongitude));
@@ -58,7 +58,7 @@
                 
                 habitatArray.push(result3);
                 habitatLocationArray.push(streetResult2);
-            }
+            }*@ 
 
 
             var regionAjax = function(regionArray){

@@ -50,6 +50,7 @@ namespace Dengue.DAL
 
         public void Update(T obj)
         {
+
             db.Entry(obj).State = EntityState.Modified;
             db.SaveChanges();
         }
