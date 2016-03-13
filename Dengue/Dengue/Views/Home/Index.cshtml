@@ -16,7 +16,6 @@
         var map;
 
         function initialize() {
-          
             var mapProp = {
                 center: new google.maps.LatLng(1.3000, 103.8000),
                 zoom: 10,
@@ -24,14 +23,14 @@
             };
             map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
 
-            var geocoder = new google.maps.Geocoder();
+            /*var geocoder = new google.maps.Geocoder();
             var pos = new google.maps.LatLng(1.35126758190324, 103.8718993098798);
             geocoder.geocode({ 'location': pos }, function (results, status) {
                 if (results[0]) {
                     alert(results[0].formatted_address);
                 }
-            });
-            
+            });*/
+
             var georssLayer = new google.maps.KmlLayer({
                 url: 'https://data.gov.sg/dataset/e7536645-6126-4358-b959-a02b22c6c473/resource/c1d04c0e-3926-40bc-8e97-2dfbb1c51c3a/download/DENGUECLUSTER.kml'
             });
@@ -40,26 +39,38 @@
 
         google.maps.event.addDomListener(window, 'load', initialize);
 
-        var regionArray = ["A", "B", "C"];
+        
+        $(document).ready(function () {
+            var regionArray = [];
+            var longArray = @Html.Raw(Json.Encode(@ViewBag.Longitude));
+            var latArray = @Html.Raw(Json.Encode(@ViewBag.Latitude));
 
-        /*$.ajax({
-            type: "POST",
-            traditional: true,
-            url: "Home/Index",
-            data: { passedRegionArray: regionArray },
-            success: function (data) { alert("SUCCESS"); }
-        });*/
+            for(var i = 0; i < longArray.length; i++){
+                var result = coordinatesToRegion(latArray[i],longArray[i]);
+                regionArray.push(result);
+            }
+
+            $.ajax({
+                type: "POST",
+                traditional: true,
+                url: "StoreRegion",
+                data: { passedRegionArray: regionArray },
+                success: function (data) { alert("SUCCESS"); }
+            });
+            alert("hi");
+        });
+
 
         function coordinatesToRegion(lat, lng) {
 
             var region;
-            
+
             //right side of sg
-            if (long > 103.895000) {
+            if (lng > 103.895000) {
                 region = "E";
             }
             //left side of sg
-            else if (long < 103.770000) {
+            else if (lng < 103.770000) {
                 region = "W";
             }
             //top part of sg

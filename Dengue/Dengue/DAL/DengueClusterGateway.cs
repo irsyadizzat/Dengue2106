@@ -44,7 +44,7 @@ namespace Dengue.DAL
 
         }
 
-        public void uploadDengueCluster()
+        public void uploadDengueCluster(String[] passedRegionArray)
         {
             string webDate = getDate();
 
@@ -126,7 +126,7 @@ namespace Dengue.DAL
                     dengueCluster.Coordinates = coordinates[j];
                     dengueCluster.Alert_Level = "0";
                     dengueCluster.Upload_Date = webDate;
-                    dengueCluster.zone = "test";
+                    dengueCluster.zone = passedRegionArray[j];
                     DengueClustergateway.Insert(dengueCluster);
                     db.SaveChanges();
                 }

@@ -27,8 +27,7 @@ namespace Dengue.DAL
             string databaseDate = e.Upload_Date;
 
 
-            cases = getLongitude();
-            coordinates = getLatitude();
+
 
             if (!webDate.Equals(databaseDate))
             {

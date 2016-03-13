@@ -32,27 +32,31 @@ namespace Dengue.Controllers
         // GET: DengueClusters
         public ActionResult Index()
         {
-
-            DengueClustergateway.uploadDengueCluster();
+            System.Diagnostics.Debug.WriteLine("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+            
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
             Weathergateway.getWeatherData();
             DengueCHgateway.uploadDengueCH();
             BHgateway.uploadBreedingHabitat();
             BHgateway.getDate();
+            List<string> longitude =  DengueClustergateway.getLongitude();
+            List<string> latitude = DengueClustergateway.getLatitude();
             //ViewData["noDengueCase"] = denguecases;
-
+            ViewBag.Longitude = longitude;
+            ViewBag.Latitude = latitude;
             //return View(DengueClustergateway.SelectAll());
 
             return View();
         }
 
         [HttpPost]
-        public ActionResult Index(String[] passedRegionArray)
+        public ActionResult StoreRegion(String[] passedRegionArray)
         {
-
-
-
-            return View();
+            System.Diagnostics.Debug.WriteLine("ASDASDSAD@$@$@$");
+            //logic to store to database
+            DengueClustergateway.uploadDengueCluster(passedRegionArray);
+            System.Diagnostics.Debug.WriteLine("OJAWFJIOASFIOJSAJIFOJSIOAF");
+            return RedirectToAction("home","index");
         }
 
         // GET: DengueClusters

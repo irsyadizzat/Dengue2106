@@ -24,7 +24,7 @@ namespace Dengue.DAL
             }
 
             WebClient web = new WebClient();
-            String html2 = web.DownloadString("https://data.gov.sg/dataset/e51da589-b2d7-486b-adfc-4505d47e1206/resource/ef7e44f1-9b14-4680-a60a-37d2c9dda390/download");
+            String html2 = web.DownloadString("https://data.gov.sg/dataset/e51da589-b2d7-486b-adfc-4505d47e1206/resource/ef7e44f1-9b14-4680-a60a-37d2c9dda390/download/weekly-infectious-bulletin-cases.csv");
             MatchCollection m4 = Regex.Matches(html2, @"Dengue Fever,\s*(.+?)\s*2016", RegexOptions.Singleline);
 
             DengueCaseHistory dengueCH = new DengueCaseHistory();
