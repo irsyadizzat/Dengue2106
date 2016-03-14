@@ -38,7 +38,7 @@ namespace Dengue.Controllers
             //     Weathergateway.getWeatherData();
             //   DengueCHgateway.uploadDengueCH();
             //  List<string> hlongitude = BHgateway.getlocation();
-                BHgateway.uploadBreedingHabitat();
+            //    BHgateway.uploadBreedingHabitat();
 
             //    DengueClustergateway.uploadDengueCluster();
 
