@@ -37,23 +37,11 @@ namespace Dengue.Controllers
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
             //     Weathergateway.getWeatherData();
             //   DengueCHgateway.uploadDengueCH();
-          //  List<string> hlongitude = BHgateway.getlocation();
-            BHgateway.uploadBreedingHabitat();
+            //  List<string> hlongitude = BHgateway.getlocation();
+                BHgateway.uploadBreedingHabitat();
+
             //    DengueClustergateway.uploadDengueCluster();
 
-
-            //List<string> longitude =  DengueClustergateway.getLongitude();
-            //List<string> latitude = DengueClustergateway.getLatitude();
-            ////ViewData["noDengueCase"] = denguecases;
-            //List<string> hlongitude = BHgateway.getLongitude();
-            //List<string> hlatitude = BHgateway.getLatitude();
-
-            //ViewBag.Longitude = longitude;
-            //ViewBag.Latitude = latitude;
-
-            //ViewBag.hLongitude = hlongitude;
-            //ViewBag.hLatitude = hlatitude;
-            //return View(DengueClustergateway.SelectAll());
 
             return View();
         }

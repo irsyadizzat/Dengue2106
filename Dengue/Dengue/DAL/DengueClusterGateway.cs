@@ -51,12 +51,12 @@ namespace Dengue.DAL
 
         public void uploadDengueCluster()
         {
-            //       string webDate = getDate();
+                   string webDate = getDate();
 
             IEnumerable<DengueCluster> data = DengueClustergateway.SelectAll();
 
-            //     var e = data.First();
-            //    string databaseDate = e.Upload_Date;
+                 var e = data.First();
+                string databaseDate = e.Upload_Date;
 
             List<string> tempstring = new List<string>();
             List<string> locations = new List<string>();
@@ -66,8 +66,8 @@ namespace Dengue.DAL
 
             List<string> realLocation = getlocation();
             List<string> region = coordinatesToRegion();
-            //    if (!webDate.Equals(databaseDate))
-            //   {
+                if (!webDate.Equals(databaseDate))
+              {
             //Remove data before inserting
             foreach (DengueCluster dc in data)
             {
@@ -135,11 +135,11 @@ namespace Dengue.DAL
                 dengueCluster.zone = region[j];
                 dengueCluster.Coordinates = coordinates[j];
                 dengueCluster.Alert_Level = "0";
-                dengueCluster.Upload_Date = "test";
+                dengueCluster.Upload_Date = webDate;
                 DengueClustergateway.Insert(dengueCluster);
                 db.SaveChanges();
             }
-            // }
+             }
 
 
         }

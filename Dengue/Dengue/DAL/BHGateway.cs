@@ -24,18 +24,18 @@ namespace Dengue.DAL
 
         public void uploadBreedingHabitat()
         {
-            //     string webDate = getDate();
+                 string webDate = getDate();
 
             IEnumerable<BreedingHabitat> data = BHgateway.SelectAll();
 
-            //   var e = data.First();
-            //   string databaseDate = e.Upload_Date;
+               var e = data.First();
+               string databaseDate = e.Upload_Date;
             List<string> region = coordinatesToRegion();
             List<string> realLocation = getlocation();
 
 
-            //  if (!webDate.Equals(databaseDate))
-            //  {
+              if (!webDate.Equals(databaseDate))
+              {
             //Remove data before inserting
             foreach (BreedingHabitat BH in data)
             {
@@ -196,11 +196,11 @@ namespace Dengue.DAL
                 bH.zone = region[j];
                 bH.No_of_Cases = Int32.Parse(cases[j]);
                 bH.Reported_Date = "unknown";
-                bH.Upload_Date = "test";
+                bH.Upload_Date = webDate;
                 BHgateway.Insert(bH);
                 db.SaveChanges();
             }
-            //   }
+               }
 
 
         }

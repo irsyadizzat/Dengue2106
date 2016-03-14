@@ -15,7 +15,11 @@ namespace Dengue.DAL
         public void uploadDengueCH()
         {
             //Dengue Case History
-            
+            //IEnumerable<DengueCaseHistory> data = DengueCHgateway.SelectAll();
+
+            //     var e = data.Last();
+            //    int databaseDate = e.Epi_Week;
+
             List<string> dengueCaseHistory = new List<string>();
             IEnumerable<DengueCaseHistory> dengueCHAll = DengueCHgateway.SelectAll();
             foreach (DengueCaseHistory dch in dengueCHAll)
