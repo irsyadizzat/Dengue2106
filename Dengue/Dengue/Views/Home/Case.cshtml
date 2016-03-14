@@ -34,7 +34,7 @@
                     <table class="table" style=" width:100%; " border="1">
                         <tr >
                             <th style="text-align:center;">
-                                @Html.DisplayNameFor(model => model.Description)
+                                @Html.DisplayNameFor(model => model.location)
                             </th>
                             <th style="text-align:center;">
                                 @Html.ActionLink("Number of Cases", "Case", new { sortCases = ViewBag.PriceSortParm })
@@ -49,7 +49,7 @@
                         {
                             <tr>
                                 <td style="width:10%; max-width:530px;">
-                                    @Html.DisplayFor(modelItem => item.Description)
+                                    @Html.DisplayFor(modelItem => item.location)
                                 </td>
                                 <td style="width:4%; text-align:center;">
                                     @Html.DisplayFor(modelItem => item.No_of_Cases)

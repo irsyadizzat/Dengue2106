@@ -102,7 +102,7 @@ namespace Dengue.Controllers
             if (!string.IsNullOrWhiteSpace(search))
             {
                 search = search.ToUpper();
-                dengueClusterAll = dengueClusterAll.Where(d => d.Description.ToUpper().Contains(search));
+                dengueClusterAll = dengueClusterAll.Where(d => d.location.ToUpper().Contains(search));
             }
             else
             {

@@ -49,6 +49,28 @@ namespace Dengue.DAL
 
         }
 
+        internal IEnumerable<DengueCluster> searchLocation(string location)
+        {
+
+            IEnumerable<DengueCluster> DengueCluster = DengueClustergateway.SelectAll();
+            location = location.ToUpper();
+            DengueCluster = DengueCluster.Where(d => d.location.ToUpper().Contains(location));
+
+            return DengueCluster.ToList();
+
+        }
+
+
+        internal IEnumerable<DengueCluster> searchRegion(string region)
+        {
+
+            IEnumerable<DengueCluster> DengueCluster = DengueClustergateway.SelectAll();
+            region = region.ToUpper();
+            DengueCluster = DengueCluster.Where(d => d.zone.ToUpper().Contains(region));
+
+            return DengueCluster.ToList();
+
+        }
         public void uploadDengueCluster()
         {
                    string webDate = getDate();

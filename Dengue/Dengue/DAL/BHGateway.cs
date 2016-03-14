@@ -507,5 +507,27 @@ namespace Dengue.DAL
             return webDate;
 
         }
+        internal IEnumerable<BreedingHabitat> searchLocation(string location)
+        {
+            IEnumerable<BreedingHabitat> BH = BHgateway.SelectAll();
+
+            location = location.ToUpper();
+            BH = BH.Where(d => d.Location.ToUpper().Contains(location));
+
+            return BH.ToList();
+
+        }
+
+
+        internal IEnumerable<BreedingHabitat> searchRegion(string region)
+        {
+
+            IEnumerable<BreedingHabitat> BH = BHgateway.SelectAll();
+            region = region.ToUpper();
+            BH = BH.Where(d => d.zone.ToUpper().Contains(region));
+
+            return BH.ToList();
+
+        }
     }
 }
