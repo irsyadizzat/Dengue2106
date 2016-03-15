@@ -92,7 +92,7 @@ namespace Dengue.DAL
                 //System.Diagnostics.Debug.WriteLine("Response stream received.");
                 //System.Diagnostics.Debug.WriteLine(readStream.ReadToEnd());
             }
-            catch (WebException we)
+            catch (WebException)
             {
                 // Step 2b: If response status != 200
                 //Stream receiveStream = we.Response.GetResponseStream();

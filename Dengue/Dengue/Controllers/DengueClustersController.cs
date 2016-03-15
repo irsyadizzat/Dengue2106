@@ -20,74 +20,74 @@ namespace Dengue.Controllers
         // GET: DengueClusters
         public ActionResult Index()
         {
-            IEnumerable<DengueCluster> data = DengueClustergateway.SelectAll();
-            foreach (DengueCluster dc in data)
-            {
-                DengueClustergateway.Delete(dc.DCluster_ID);
-            }
-            List<string> tempstring = new List<string>();
-            List<string> locations = new List<string>();
-            List<string> cases = new List<string>();
-            List<string> hyperlink = new List<string>();
-            List<string> coordinates = new List<string>();
+            //IEnumerable<DengueCluster> data = DengueClustergateway.SelectAll();
+            //foreach (DengueCluster dc in data)
+            //{
+            //    DengueClustergateway.Delete(dc.DCluster_ID);
+            //}
+            //List<string> tempstring = new List<string>();
+            //List<string> locations = new List<string>();
+            //List<string> cases = new List<string>();
+            //List<string> hyperlink = new List<string>();
+            //List<string> coordinates = new List<string>();
 
-            WebClient web = new WebClient();
-            String html = web.DownloadString("file:///C:/Users/IzzatLaptop/Desktop/XML%20File/dengue-clusters.kml");
-            MatchCollection m1 = Regex.Matches(html, @"<td>\s*(.+?)\s*</td>", RegexOptions.Singleline);
-            MatchCollection m2 = Regex.Matches(html, @"href=\s*(.+?)\s*>", RegexOptions.Singleline);
-            MatchCollection m3 = Regex.Matches(html, @"<coordinates>\s*(.+?)\s*</coordinates>", RegexOptions.Singleline);
+            //WebClient web = new WebClient();
+            //String html = web.DownloadString("file:///C:/Users/IzzatLaptop/Desktop/XML%20File/dengue-clusters.kml");
+            //MatchCollection m1 = Regex.Matches(html, @"<td>\s*(.+?)\s*</td>", RegexOptions.Singleline);
+            //MatchCollection m2 = Regex.Matches(html, @"href=\s*(.+?)\s*>", RegexOptions.Singleline);
+            //MatchCollection m3 = Regex.Matches(html, @"<coordinates>\s*(.+?)\s*</coordinates>", RegexOptions.Singleline);
 
-            //locations and cases
-            foreach (Match m in m1)
-            {
+            ////locations and cases
+            //foreach (Match m in m1)
+            //{
 
-                string test = m.Groups[1].Value;
-                tempstring.Add(test);
-            }
+            //    string test = m.Groups[1].Value;
+            //    tempstring.Add(test);
+            //}
 
-            //hyperlink
-            foreach (Match m in m2)
-            {
+            ////hyperlink
+            //foreach (Match m in m2)
+            //{
 
-                string test = m.Groups[1].Value;
-                hyperlink.Add(test);
-            }
+            //    string test = m.Groups[1].Value;
+            //    hyperlink.Add(test);
+            //}
 
-            //coordinates
-            foreach (Match m in m3)
-            {
+            ////coordinates
+            //foreach (Match m in m3)
+            //{
 
-                string test = m.Groups[1].Value;
-                coordinates.Add(test);
-            }
+            //    string test = m.Groups[1].Value;
+            //    coordinates.Add(test);
+            //}
 
-            //cases
-            for (int i = 6; i < tempstring.Count; i += 15)
-            {
-                string newthingy = tempstring[i];
-                cases.Add(newthingy);
-            }
+            ////cases
+            //for (int i = 6; i < tempstring.Count; i += 15)
+            //{
+            //    string newthingy = tempstring[i];
+            //    cases.Add(newthingy);
+            //}
 
-            //locations
-            for (int i = 4; i < tempstring.Count; i += 15)
-            {
-                string newthingy = tempstring[i];
-                locations.Add(newthingy);
-            }
+            ////locations
+            //for (int i = 4; i < tempstring.Count; i += 15)
+            //{
+            //    string newthingy = tempstring[i];
+            //    locations.Add(newthingy);
+            //}
 
-            DengueCluster dengueCluster = new DengueCluster();
+            //DengueCluster dengueCluster = new DengueCluster();
 
-            for (int j = 0; j < locations.Count; j++)
-            {
-                dengueCluster.Description = locations[j];
-                dengueCluster.No_of_Cases = Int32.Parse(cases[j]);
-                dengueCluster.Hyperlink = hyperlink[j];
-                dengueCluster.Coordinates = coordinates[j];
-                dengueCluster.Alert_Level = "0";
-                dengueCluster.Upload_Date = DateTime.Now.Date.ToShortDateString();
-                DengueClustergateway.Insert(dengueCluster);
-                db.SaveChanges();
-            }
+            //for (int j = 0; j < locations.Count; j++)
+            //{
+            //    dengueCluster.Description = locations[j];
+            //    dengueCluster.No_of_Cases = Int32.Parse(cases[j]);
+            //    dengueCluster.Hyperlink = hyperlink[j];
+            //    dengueCluster.Coordinates = coordinates[j];
+            //    dengueCluster.Alert_Level = "0";
+            //    dengueCluster.Upload_Date = DateTime.Now.Date.ToShortDateString();
+            //    DengueClustergateway.Insert(dengueCluster);
+            //    db.SaveChanges();
+            //}
 
 
             return View(DengueClustergateway.SelectAll());

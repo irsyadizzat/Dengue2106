@@ -44,7 +44,7 @@
             var hLongArray = @Html.Raw(Json.Encode(@ViewBag.hLongitude));
             var hLatArray = @Html.Raw(Json.Encode(@ViewBag.hLatitude));
 
-            for(var i = 0; i < longArray.length; i++){
+            /*for(var i = 0; i < longArray.length; i++){
                 var result = coordinatesToRegion(latArray[i],longArray[i]);
                 var streetResult = coordinatesToName(latArray[i],longArray[i]);
 
@@ -58,7 +58,7 @@
                 
                 habitatArray.push(result3);
                 habitatLocationArray.push(streetResult2);
-            }
+            }*/
 
 
             var regionAjax = function(regionArray){
@@ -102,9 +102,9 @@
             }
 
             regionAjax(regionArray);
-            habitatAjax(habitatArray);
-            regionLocationAjax(regionLocationArray);
-            habitatLocationAjax(habitatLocationArray);
+            //habitatAjax(habitatArray);
+            //regionLocationAjax(regionLocationArray);
+            //habitatLocationAjax(habitatLocationArray);
         });
 
         function coordinatesToName(lat,lng){
@@ -203,11 +203,11 @@
                     <p style="margin-top:5px;font-size: 11px; color: #8899a6;">Curious about the dengue condition in your area?<br> Let us check for you.</p>
                 </div>
                 <div>
-                    @using (Html.BeginForm("EvaluateArea", "HomeController"))
+                    @using (Html.BeginForm("EvaluateArea", "Home"))
                     {
                         <div class="form-group" style="margin:8px 0px 15px 25px; width:80%; text-align:center;">
                             <label for="exampleInputEmail1">Input your current area</label>
-                            <input type="text" class="form-control" placeholder="Location" id="evaluateArea_Input">
+                            @Html.DropDownList("Weather", ViewBag.myList as SelectList)
                             <button style="margin-top:5px; width:150px;" type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Evaluate</button>
                         </div>
                     }
