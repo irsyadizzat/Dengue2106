@@ -28,6 +28,38 @@ namespace Dengue.DAL
             return denguecases;
         }
 
+        public int getCasesRegion(string region)
+        {
+            int denguecases = 0;
+
+            IEnumerable<DengueCluster> numbercases = DengueClustergateway.SelectAll();
+            region = region.ToUpper();
+
+            numbercases = numbercases.Where(d => d.zone.ToUpper().Contains(region));
+
+            foreach (DengueCluster dc in numbercases)
+            {
+                denguecases += dc.No_of_Cases;
+            }
+            return denguecases;
+        }
+
+        public int getCasesLocation(string location)
+        {
+            int denguecases = 0;
+
+            IEnumerable<DengueCluster> numbercases = DengueClustergateway.SelectAll();
+            location = location.ToUpper();
+
+            numbercases = numbercases.Where(d => d.location.ToUpper().Contains(location));
+
+            foreach (DengueCluster dc in numbercases)
+            {
+                denguecases += dc.No_of_Cases;
+            }
+            return denguecases;
+        }
+
         internal IEnumerable<DengueCluster> Order(string sortOrder, IEnumerable<DengueCluster> DengueCluster)
         {
             DengueCluster = from t in SelectAll()

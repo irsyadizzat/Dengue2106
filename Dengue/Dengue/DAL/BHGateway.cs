@@ -22,6 +22,49 @@ namespace Dengue.DAL
 
         List<string> cases = new List<string>();
 
+        public int getNoCases()
+        {
+            int breedingCases = 0;
+            IEnumerable<BreedingHabitat> numbercases = BHgateway.SelectAll();
+            foreach (BreedingHabitat BH in numbercases)
+            {
+                breedingCases += BH.No_of_Cases;
+            }
+            return breedingCases;
+        }
+
+        public int getCasesRegion(string region)
+        {
+            int breedingCases = 0;
+            IEnumerable<BreedingHabitat> BH = BHgateway.SelectAll();
+            region = region.ToUpper();
+
+            BH = BH.Where(d => d.zone.ToUpper().Contains(region));
+
+            foreach (BreedingHabitat bh in BH)
+            {
+                breedingCases += bh.No_of_Cases;
+            }
+            return breedingCases;
+
+        }
+
+        public int getCasesLocation(string location)
+        {
+            int breedingCases = 0;
+            IEnumerable<BreedingHabitat> BH = BHgateway.SelectAll();
+            location = location.ToUpper();
+
+            BH = BH.Where(d => d.Location.ToUpper().Contains(location));
+
+            foreach (BreedingHabitat bh in BH)
+            {
+                breedingCases += bh.No_of_Cases;
+            }
+            return breedingCases;
+
+        }
+
         public void uploadBreedingHabitat()
         {
                  string webDate = getDate();

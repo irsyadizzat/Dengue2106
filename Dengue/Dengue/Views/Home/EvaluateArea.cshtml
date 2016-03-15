@@ -25,7 +25,7 @@
                             Based on our calculation.. <u>@ViewBag.street</u> is currently at:
                         </div>
                         <div style="color: #2a6496; font-size:20px; text-align:center; padding-top:10px;">
-                            <u><span style="font-size:35px; color:red;">HIGH/MEDIUM/LOW</span></u> risk level
+                            <u><span style="font-size:35px; color:red;">@ViewBag.riskLevel</span></u> risk level
                         </div>
                     </div>
                     <!--middle container for statistics-->
@@ -45,8 +45,8 @@
                                         </div>
                                         <div style="margin-left:10%;">
                                             <p style="font-size: 13px; color: #8899a6;">there are: </p>
-                                            <p>100 Dengue Cluster</p>
-                                            <p>100 Breeding Habitats</p>
+                                            <p>@ViewBag.dengueClusterCases Dengue Cluster</p>
+                                            <p>@ViewBag.breedingCases Breeding Habitats</p>
                                         </div>
                                     </div>
                                 </div>
@@ -58,8 +58,8 @@
                                         </div>
                                         <div style="margin-left:10%;">
                                             <p style="font-size: 13px; color: #8899a6;">there are: </p>
-                                            <p>100 Dengue Cluster</p>
-                                            <p>100 Dengue Breeding Habitats</p>
+                                            <p>@ViewBag.dengueRegion Dengue Cluster</p>
+                                            <p>@ViewBag.breedingRegion Dengue Breeding Habitats</p>
                                         </div>
                                     </div>
                                 </div>
@@ -71,8 +71,8 @@
                                         </div>
                                         <div style="margin-left:10%;">
                                             <p style="font-size: 13px; color: #8899a6;">there are: </p>
-                                            <p>100 Dengue Cluster</p>
-                                            <p>100 Breeding Habitats</p>
+                                            <p>@ViewBag.dengueLocation Dengue Cluster</p>
+                                            <p>@ViewBag.breedingLocation Breeding Habitats</p>
                                         </div>
                                     </div>
                                 </div>
@@ -91,15 +91,15 @@
                                         <!-- Wrapper for slides -->
                                         <div class="carousel-inner" role="listbox">
                                             <div class="item active" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawDengueClusterRegionChart", "Home")" />
+                                                <img src="@Url.Action("DrawDengueClusterRegionChart", "Home", new { chartRegion = @ViewBag.regionNumber })" />
                                             </div>
 
                                             <div class="item" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawBreedingHabitatRegionChart", "Home")" />
+                                                <img src="@Url.Action("DrawBreedingHabitatRegionChart", "Home", new { chartRegion = @ViewBag.regionNumber })" />
                                             </div>
 
                                             <div class="item" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawOverallChart", "Home")" />
+                                                <img src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = @ViewBag.regionNumber })" />
                                             </div>
                                         </div>
 

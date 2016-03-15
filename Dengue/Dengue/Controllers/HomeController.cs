@@ -22,7 +22,7 @@ namespace Dengue.Controllers
         private BHGateway BHgateway = new BHGateway();
 
         IEnumerable<DengueCluster> dengueClusterAll;
-        IEnumerable<DengueCaseHistory> dengueCHAll;
+
 
 
         // GET: DengueClusters
@@ -42,65 +42,11 @@ namespace Dengue.Controllers
             //DengueCHgateway.uploadDengueCH();
             //BHgateway.uploadBreedingHabitat();
             //BHgateway.getDate();
-            List<string> longitude = DengueClustergateway.getLongitude();
-            List<string> latitude = DengueClustergateway.getLatitude();
-            //ViewData["noDengueCase"] = denguecases;
-            List<string> hlongitude = BHgateway.getLongitude();
-            List<string> hlatitude = BHgateway.getLatitude();
 
-            ViewBag.Longitude = longitude;
-            ViewBag.Latitude = latitude;
-
-            ViewBag.hLongitude = hlongitude;
-            ViewBag.hLatitude = hlatitude;
-            //return View(DengueClustergateway.SelectAll());
 
             return View();
         }
 
-        [HttpPost]
-        public ActionResult StoreRegion(String[] passedRegionArray)
-        {
-            System.Diagnostics.Debug.WriteLine("into store region method");
-            //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
-            //logic to store to database
-            //DengueClustergateway.uploadDengueCluster(passedRegionArray);
-            System.Diagnostics.Debug.WriteLine("finish store region method");
-            return RedirectToAction("index", "home");
-        }
-
-        [HttpPost]
-        public ActionResult StoreHabitat(String[] passedHabitatArray)
-        {
-            System.Diagnostics.Debug.WriteLine("into store region method");
-            //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
-            //logic to store to database
-            //BHgateway.uploadBreedingHabitat(passedHabitatArray);
-            System.Diagnostics.Debug.WriteLine("finish store region method");
-            return RedirectToAction("index", "home");
-        }
-
-        [HttpPost]
-        public ActionResult StoreRegionLocation(String[] passedHabitatArray)
-        {
-            System.Diagnostics.Debug.WriteLine("into store region method");
-            //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
-            //logic to store to database
-            //BHgateway.uploadBreedingHabitat(passedHabitatArray);
-            System.Diagnostics.Debug.WriteLine("finish store region method");
-            return RedirectToAction("index", "home");
-        }
-
-        [HttpPost]
-        public ActionResult StoreHabitatLocation(String[] passedHabitatArray)
-        {
-            System.Diagnostics.Debug.WriteLine("into store region method");
-            //System.Diagnostics.Debug.WriteLine(passedHabitatArray[0]);
-            //logic to store to database
-            //BHgateway.uploadBreedingHabitat(passedHabitatArray);
-            System.Diagnostics.Debug.WriteLine("finish store region method");
-            return RedirectToAction("index", "home");
-        }
 
         // GET: DengueClusters
         public ActionResult Case(string search, string sortCases)
@@ -204,6 +150,7 @@ namespace Dengue.Controllers
         {
             IEnumerable<Weather> weatherAll = Weathergateway.SelectAll();
             List<SelectListItem> weatherLocationList = new List<SelectListItem>();
+
             foreach (Weather w in weatherAll)
             {
                 weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
@@ -219,26 +166,103 @@ namespace Dengue.Controllers
                 //0 = street name, 1 = zone, 2 = forecast
                 string[] passedWeatherInfo = weather.Split(';');
 
+                //logic to get risk level
+                int dcScore = 0, bhScore = 0, weatherScore = 0, totalScore = 0;
+                double dcAverage = 0, bhAverage = 0;
+                double sgBH = BHgateway.getNoCases();
+                double sgDC = DengueClustergateway.getNoCases();
+                double regionBH = BHgateway.getCasesRegion(passedWeatherInfo[1]);
+                double regionDC = DengueClustergateway.getCasesRegion(passedWeatherInfo[1]);
+
+                //get average percentage
+                dcAverage = ((sgDC / 5) / sgDC) * 100;
+                bhAverage = ((sgBH / 5) / sgBH) * 100;
+
+                System.Diagnostics.Debug.WriteLine(dcAverage);
+                System.Diagnostics.Debug.WriteLine(bhAverage);
+
+                double bhPercent = (regionBH / sgBH) * 100;
+                double dcPercent = (regionDC / sgDC) * 100;
+
+                System.Diagnostics.Debug.WriteLine(bhPercent);
+                System.Diagnostics.Debug.WriteLine(dcPercent);
+
+                if (bhPercent >= 66)
+                {
+                    bhScore = 3;
+                }
+                else if (bhPercent >= 33) {
+                    bhScore = 2;
+                }
+                else if (bhPercent >= 0){
+                    bhScore = 1;
+                }
+
+                if (dcPercent >= 66)
+                {
+                    dcScore = 3;
+                }
+                else if (dcPercent >= 33)
+                {
+                    dcScore = 2;
+                }
+                else if (dcPercent >= 0)
+                {
+                    dcScore = 1;
+                }
+
+                //TODO: logic to get weather score
+
+                totalScore = dcScore + bhScore + weatherScore;
+
+                if (totalScore > 6)
+                {
+                    ViewBag.riskLevel = "HIGH";
+                }
+                else if (totalScore > 3)
+                {
+                    ViewBag.riskLevel = "MEDIUM";
+                }
+                else if (totalScore > 0) {
+                    ViewBag.riskLevel = "LOW";
+                }
+
+                //For info in whole singapore
+                ViewBag.dengueClusterCases = sgDC;
+                ViewBag.breedingCases = sgBH;
+                //for info in region
+                ViewBag.breedingRegion = regionBH;
+                ViewBag.dengueRegion = regionDC;
+                //for info in area
+                ViewBag.dengueLocation = DengueClustergateway.getCasesLocation(passedWeatherInfo[0]);
+                ViewBag.breedingLocation = BHgateway.getCasesLocation(passedWeatherInfo[0]);
+
                 ViewBag.street = passedWeatherInfo[0];
+                
                 if (passedWeatherInfo[1] == "C")
                 {
                     ViewBag.region = "Central";
+                    ViewBag.regionNumber = 4;
                 }
                 else if (passedWeatherInfo[1] == "N")
                 {
                     ViewBag.region = "North";
+                    ViewBag.regionNumber = 0;
                 }
                 else if (passedWeatherInfo[1] == "S")
                 {
                     ViewBag.region = "South";
+                    ViewBag.regionNumber = 1;
                 }
                 else if (passedWeatherInfo[1] == "E")
                 {
                     ViewBag.region = "East";
+                    ViewBag.regionNumber = 2;
                 }
                 else if (passedWeatherInfo[1] == "W")
                 {
                     ViewBag.region = "West";
+                    ViewBag.regionNumber = 3;
                 }
 
                 ViewBag.selectedEvaluateArea = true;
@@ -251,10 +275,17 @@ namespace Dengue.Controllers
             return View();
         }
 
-        public ActionResult DrawDengueClusterRegionChart()
+        public ActionResult DrawDengueClusterRegionChart(int chartRegion)
         {
             string[] x = new string[5] { "North", "South", "East", "West", "Central" };
-            int[] y = new int[5] { 50, 50, 50, 50, 50 };
+           
+            int[] y = new int[5] {
+                DengueClustergateway.getCasesRegion("N"),
+                DengueClustergateway.getCasesRegion("S"),
+                DengueClustergateway.getCasesRegion("E"),
+                DengueClustergateway.getCasesRegion("W"),
+                DengueClustergateway.getCasesRegion("C")
+            };
 
             Chart chart = new Chart();
             chart.Width = 360;
@@ -281,7 +312,7 @@ namespace Dengue.Controllers
             }
 
             chart.Series.Add(dataS);
-            chart.Series["Data"].Points[2]["Exploded"] = "True";
+            chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
 
             //chart.Legends.Add(new Legend("Location"));
             //chart.Series["Data"].Legend = "Location";
@@ -292,10 +323,16 @@ namespace Dengue.Controllers
             return base.File(Server.MapPath("~/Content/DengueClusterRegionChart"), "jpeg");
         }
 
-        public ActionResult DrawBreedingHabitatRegionChart()
+        public ActionResult DrawBreedingHabitatRegionChart(int chartRegion)
         {
             string[] x = new string[5] { "North", "South", "East", "West", "Central" };
-            int[] y = new int[5] { 50, 50, 50, 50, 50 };
+            int[] y = new int[5] {
+                BHgateway.getCasesRegion("N"),
+                BHgateway.getCasesRegion("S"),
+                BHgateway.getCasesRegion("E"),
+                BHgateway.getCasesRegion("W"),
+                BHgateway.getCasesRegion("C")
+            };
 
             Chart chart = new Chart();
             chart.Width = 360;
@@ -322,7 +359,7 @@ namespace Dengue.Controllers
             }
 
             chart.Series.Add(dataS);
-            chart.Series["Data"].Points[2]["Exploded"] = "True";
+            chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
 
             //chart.Legends.Add(new Legend("Location"));
             //chart.Series["Data"].Legend = "Location";
@@ -333,10 +370,16 @@ namespace Dengue.Controllers
             return base.File(Server.MapPath("~/Content/BreedingHabitatRegionChart"), "jpeg");
         }
 
-        public ActionResult DrawOverallChart()
+        public ActionResult DrawOverallChart(int chartRegion)
         {
             string[] x = new string[5] { "North", "South", "East", "West", "Central" };
-            int[] y = new int[5] { 50, 50, 50, 50, 50 };
+            int[] y = new int[5] {
+                DengueClustergateway.getCasesRegion("N") + BHgateway.getCasesRegion("N"),
+                DengueClustergateway.getCasesRegion("S") + BHgateway.getCasesRegion("S"),
+                DengueClustergateway.getCasesRegion("E") + BHgateway.getCasesRegion("E"),
+                DengueClustergateway.getCasesRegion("W") + BHgateway.getCasesRegion("W"),
+                DengueClustergateway.getCasesRegion("C") + BHgateway.getCasesRegion("C")
+            };
 
             Chart chart = new Chart();
             chart.Width = 360;
@@ -363,7 +406,7 @@ namespace Dengue.Controllers
             }
 
             chart.Series.Add(dataS);
-            chart.Series["Data"].Points[2]["Exploded"] = "True";
+            chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
 
             //chart.Legends.Add(new Legend("Location"));
             //chart.Series["Data"].Legend = "Location";
