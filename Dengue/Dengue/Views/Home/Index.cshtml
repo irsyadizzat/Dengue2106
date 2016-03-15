@@ -30,123 +30,6 @@
         }
 
         google.maps.event.addDomListener(window, 'load', initialize);
-
-        
-        $(document).ready(function () {
-            var regionArray = ["A"];
-            var habitatArray = ["A"];
-            var regionLocationArray = ["A"];
-            var habitatLocationArray = ["A"];
-
-            @*var longArray = @Html.Raw(Json.Encode(@ViewBag.Longitude));
-            var latArray = @Html.Raw(Json.Encode(@ViewBag.Latitude));
-
-            var hLongArray = @Html.Raw(Json.Encode(@ViewBag.hLongitude));
-            var hLatArray = @Html.Raw(Json.Encode(@ViewBag.hLatitude));
-
-            for(var i = 0; i < longArray.length; i++){
-                var result = coordinatesToRegion(latArray[i],longArray[i]);
-                var streetResult = coordinatesToName(latArray[i],longArray[i]);
-
-                regionArray.push(result);
-                regionLocationArray.push(streetResult);
-            }
-
-            for(var k = 0; k < hLongArray.length; k++){
-                var result3 = coordinatesToRegion(hLatArray[k],hLongArray[k]);
-                var streetResult2 = coordinatesToName(latArray[k],longArray[k]);
-                
-                habitatArray.push(result3);
-                habitatLocationArray.push(streetResult2);
-            }*@ 
-
-
-            var regionAjax = function(regionArray){
-                $.ajax({
-                    type: "POST",
-                    traditional: true,
-                    url: "StoreRegion",
-                    data: { "passedRegionArray": regionArray },
-                    success: function (data) { alert("SUCCESS"); }
-                });
-            }
-
-            var habitatAjax = function(habitatArray){
-                $.ajax({
-                    type: "POST",
-                    traditional: true,
-                    url: "StoreHabitat",
-                    data: { "passedHabitatArray": habitatArray },
-                    success: function (data) { alert("SUCCESS"); }
-                });
-            }
-
-            var regionLocationAjax = function(regionLocationArray){
-                $.ajax({
-                    type: "POST",
-                    traditional: true,
-                    url: "StoreRegionLocation",
-                    data: { "passedRegionLocationNameArray": regionLocationArray },
-                    success: function (data) { alert("SUCCESS"); }
-                });
-            }
-
-            var habitatLocationAjax = function(habitatLocationArray){
-                $.ajax({
-                    type: "POST",
-                    traditional: true,
-                    url: "StoreHabitatLocation",
-                    data: { "passedHabitatLocationNameArray": habitatLocationArray },
-                    success: function (data) { alert("SUCCESS"); }
-                });
-            }
-
-            regionAjax(regionArray);
-            habitatAjax(habitatArray);
-            regionLocationAjax(regionLocationArray);
-            habitatLocationAjax(habitatLocationArray);
-        });
-
-        function coordinatesToName(lat,lng){
-
-            var streetName;
-
-            var geocoder = new google.maps.Geocoder();
-            var pos = new google.maps.LatLng(lat, lng);
-            geocoder.geocode({ 'location': pos }, function (results, status) {
-                if (results[0]) {
-                    streetName = results[0].formatted_address
-                }
-            });
-            return streetName;
-        }
-
-        function coordinatesToRegion(lat, lng) {
-
-            var region;
-
-            //right side of sg
-            if (lng > 103.895000) {
-                region = "E";
-            }
-            //left side of sg
-            else if (lng < 103.770000) {
-                region = "W";
-            }
-            //top part of sg
-            else if (lat > 1.390000) {
-                region = "N";
-            }
-            //bottom part of sg
-            else if (lat < 1.315) {
-                region = "S";
-            }
-            //central of sg
-            else {
-                region = "C";
-            }
-            return region;
-        }
     });
 </script>
 
@@ -203,11 +86,11 @@
                     <p style="margin-top:5px;font-size: 11px; color: #8899a6;">Curious about the dengue condition in your area?<br> Let us check for you.</p>
                 </div>
                 <div>
-                    @using (Html.BeginForm("EvaluateArea", "HomeController"))
+                    @using (Html.BeginForm("EvaluateArea", "Home"))
                     {
                         <div class="form-group" style="margin:8px 0px 15px 25px; width:80%; text-align:center;">
                             <label for="exampleInputEmail1">Input your current area</label>
-                            <input type="text" class="form-control" placeholder="Location" id="evaluateArea_Input">
+                            @Html.DropDownList("Weather", ViewBag.myList as SelectList)
                             <button style="margin-top:5px; width:150px;" type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Evaluate</button>
                         </div>
                     }

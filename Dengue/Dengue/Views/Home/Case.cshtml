@@ -23,11 +23,7 @@
                     {
                         @Html.TextBox("search", "", new { placeholder = "Enter your search here" })
                         <input type="submit" name="search" value="Search" />
-                    }
-                    
-                        @Html.Label("Location")
-                        @Html.DropDownList("Weather", ViewBag.myList as SelectList)
-                    
+                    }                    
                 </div>
 
                 <div style="overflow:auto; height:640px; margin-right:3px;">
@@ -102,11 +98,11 @@
                         <p style="margin-top:5px;font-size: 11px; color: #8899a6;">Curious about the dengue condition in your area?<br> Let us check for you.</p>
                     </div>
                     <div>
-                        @using (Html.BeginForm("EvaluateArea", "HomeController"))
+                        @using (Html.BeginForm("EvaluateArea", "Home"))
                         {
                             <div class="form-group" style="margin:8px 0px 15px 25px; width:80%; text-align:center;">
                                 <label for="exampleInputEmail1">Input your current area</label>
-                                <input type="text" class="form-control" placeholder="Location" id="evaluateArea_Input">
+                                @Html.DropDownList("Weather", ViewBag.myList as SelectList)
                                 <button style="margin-top:5px; width:150px;" type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Evaluate</button>
                             </div>
                         }
