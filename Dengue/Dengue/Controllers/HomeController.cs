@@ -29,13 +29,7 @@ namespace Dengue.Controllers
         public ActionResult Index()
         {
             System.Diagnostics.Debug.WriteLine("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-            IEnumerable<Weather> weatherAll = Weathergateway.SelectAll();
-            List<SelectListItem> weatherLocationList = new List<SelectListItem>();
-            foreach (Weather w in weatherAll)
-            {
-                weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
-            }
-            ViewBag.Weather = weatherLocationList;
+            setWeatherDropdown();
 
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
             //Weathergateway.getWeatherData();
@@ -76,13 +70,7 @@ namespace Dengue.Controllers
                 }
             }
 
-            IEnumerable<Weather> weatherAll = Weathergateway.SelectAll();
-            List<SelectListItem> weatherLocationList = new List<SelectListItem>();
-            foreach (Weather w in weatherAll)
-            {
-                weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
-            }
-            ViewBag.Weather = weatherLocationList;
+            setWeatherDropdown();
 
             return View(dengueClusterAll);
         }
@@ -104,13 +92,8 @@ namespace Dengue.Controllers
 
         public ActionResult ContactUs()
         {
-            IEnumerable<Weather> weatherAll = Weathergateway.SelectAll();
-            List<SelectListItem> weatherLocationList = new List<SelectListItem>();
-            foreach (Weather w in weatherAll)
-            {
-                weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
-            }
-            ViewBag.Weather = weatherLocationList;
+            ViewBag.contactedUs = "false";
+            setWeatherDropdown();
 
             ViewBag.Message = "Your contact page.";
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
@@ -120,13 +103,8 @@ namespace Dengue.Controllers
         [HttpPost]
         public ActionResult ContactUs(string name, string contactNo, string email, string description)
         {
-            IEnumerable<Weather> weatherAll = Weathergateway.SelectAll();
-            List<SelectListItem> weatherLocationList = new List<SelectListItem>();
-            foreach (Weather w in weatherAll)
-            {
-                weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
-            }
-            ViewBag.Weather = weatherLocationList;
+            ViewBag.contactedUs = "true";
+            setWeatherDropdown();
             using (MailMessage mail = new MailMessage())
             {
                 mail.From = new MailAddress(email);
@@ -148,12 +126,36 @@ namespace Dengue.Controllers
 
         public ActionResult EvaluateArea(string weather)
         {
+            //0 = street name, 1 = zone, 2 = forecast
+            string[] passedWeatherInfo = weather.Split(';');
+            int noOfLocationInZone = 0;
+            Boolean jurongAdded = false;
+
             IEnumerable<Weather> weatherAll = Weathergateway.SelectAll();
             List<SelectListItem> weatherLocationList = new List<SelectListItem>();
 
             foreach (Weather w in weatherAll)
             {
-                weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
+                if (w.Locations == "JURONG EAST/WEST" || w.Locations == "JURONG INDUSTRIAL ESTATE" || w.Locations == "JURONG ISLAND")
+                {
+                    if (jurongAdded == false)
+                    {
+                        weatherLocationList.Add(new SelectListItem() { Text = "JURONG", Value = "JURONG;" + w.Zone + ";" + w.Forecast });
+                        jurongAdded = true;
+                    }
+                }
+                else if (w.Locations == "CITY")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "ORCHARD", Value = "ORCHARD;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations == "MACRITCHIE RESERVOIR")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "MACRITCHIE", Value = "MACRITCHIE;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations != "PULAU TEKONG" || w.Locations != "PULAU UBIN")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
+                }
             }
             ViewBag.Weather = weatherLocationList;
 
@@ -163,67 +165,40 @@ namespace Dengue.Controllers
             }
             else
             {
-                //0 = street name, 1 = zone, 2 = forecast
-                string[] passedWeatherInfo = weather.Split(';');
-
                 //logic to get risk level
-                int dcScore = 0, bhScore = 0, weatherScore = 0, totalScore = 0;
-                double dcAverage = 0, bhAverage = 0;
+                int dcLocationScore = 0, bhLocationScore = 0, 
+                    dcRegionScore = 0, bhRegionScore = 0, 
+                    weatherScore = 0, totalScore = 0;
                 double sgBH = BHgateway.getNoCases();
                 double sgDC = DengueClustergateway.getNoCases();
                 double regionBH = BHgateway.getCasesRegion(passedWeatherInfo[1]);
                 double regionDC = DengueClustergateway.getCasesRegion(passedWeatherInfo[1]);
+                double locationBH = BHgateway.getCasesLocation(passedWeatherInfo[0]);
+                double locationDC = DengueClustergateway.getCasesLocation(passedWeatherInfo[0]);
 
-                //get average percentage
-                dcAverage = ((sgDC / 5) / sgDC) * 100;
-                bhAverage = ((sgBH / 5) / sgBH) * 100;
+                dcLocationScore = computeLocationScore(locationDC, regionDC, noOfLocationInZone);
+                bhLocationScore = computeLocationScore(locationBH, regionBH, noOfLocationInZone);
+                dcRegionScore = computeRegionScore(regionDC, sgDC);
+                bhRegionScore = computeRegionScore(regionBH, sgBH);
+                weatherScore = computeWeatherScore(passedWeatherInfo[2]);
 
-                System.Diagnostics.Debug.WriteLine(dcAverage);
-                System.Diagnostics.Debug.WriteLine(bhAverage);
+                System.Diagnostics.Debug.WriteLine("dcLocationScore: " + dcLocationScore);
+                System.Diagnostics.Debug.WriteLine("bhLocationScore: " + bhLocationScore);
+                System.Diagnostics.Debug.WriteLine("dcScore: "+ dcRegionScore);
+                System.Diagnostics.Debug.WriteLine("bhScore: " + bhRegionScore);
+                System.Diagnostics.Debug.WriteLine("weatherScore: " + weatherScore);
 
-                double bhPercent = (regionBH / sgBH) * 100;
-                double dcPercent = (regionDC / sgDC) * 100;
+                totalScore = dcLocationScore + bhLocationScore + dcRegionScore + bhRegionScore + weatherScore;
 
-                System.Diagnostics.Debug.WriteLine(bhPercent);
-                System.Diagnostics.Debug.WriteLine(dcPercent);
-
-                if (bhPercent >= 66)
-                {
-                    bhScore = 3;
-                }
-                else if (bhPercent >= 33) {
-                    bhScore = 2;
-                }
-                else if (bhPercent >= 0){
-                    bhScore = 1;
-                }
-
-                if (dcPercent >= 66)
-                {
-                    dcScore = 3;
-                }
-                else if (dcPercent >= 33)
-                {
-                    dcScore = 2;
-                }
-                else if (dcPercent >= 0)
-                {
-                    dcScore = 1;
-                }
-
-                //TODO: logic to get weather score
-
-                totalScore = dcScore + bhScore + weatherScore;
-
-                if (totalScore > 6)
+                if (totalScore >= 8)
                 {
                     ViewBag.riskLevel = "HIGH";
                 }
-                else if (totalScore > 3)
+                else if (totalScore > 4)
                 {
                     ViewBag.riskLevel = "MEDIUM";
                 }
-                else if (totalScore > 0) {
+                else if (totalScore <= 4) {
                     ViewBag.riskLevel = "LOW";
                 }
 
@@ -234,45 +209,115 @@ namespace Dengue.Controllers
                 ViewBag.breedingRegion = regionBH;
                 ViewBag.dengueRegion = regionDC;
                 //for info in area
-                ViewBag.dengueLocation = DengueClustergateway.getCasesLocation(passedWeatherInfo[0]);
-                ViewBag.breedingLocation = BHgateway.getCasesLocation(passedWeatherInfo[0]);
+                ViewBag.dengueLocation = locationDC;
+                ViewBag.breedingLocation = locationBH;
 
+                //set street name
                 ViewBag.street = passedWeatherInfo[0];
-                
-                if (passedWeatherInfo[1] == "C")
-                {
-                    ViewBag.region = "Central";
-                    ViewBag.regionNumber = 4;
-                }
-                else if (passedWeatherInfo[1] == "N")
-                {
-                    ViewBag.region = "North";
-                    ViewBag.regionNumber = 0;
-                }
-                else if (passedWeatherInfo[1] == "S")
-                {
-                    ViewBag.region = "South";
-                    ViewBag.regionNumber = 1;
-                }
-                else if (passedWeatherInfo[1] == "E")
-                {
-                    ViewBag.region = "East";
-                    ViewBag.regionNumber = 2;
-                }
-                else if (passedWeatherInfo[1] == "W")
-                {
-                    ViewBag.region = "West";
-                    ViewBag.regionNumber = 3;
-                }
+                //set region name and region number
+                convertZone(passedWeatherInfo[1]);
 
+                //to check if a value is chosen
                 ViewBag.selectedEvaluateArea = true;
             }
             System.Diagnostics.Debug.WriteLine(weather);
 
-
-
-
             return View();
+        }
+
+        public int computeWeatherScore(string weatherAbb) {
+            int score = 0;
+
+            weatherAbb = weatherAbb.Trim();
+
+            if (weatherAbb == "Fair (Day)" || weatherAbb == "Fair (Night)" || weatherAbb == "Hazy")
+            {
+                score = 1;
+            }
+            else if (weatherAbb == "Partly Cloudy" || weatherAbb == "Cloudy" || weatherAbb == "Windy")
+            {
+                System.Diagnostics.Debug.WriteLine("hello");
+                score = 2;
+            }
+            else if (weatherAbb == "Rain" || weatherAbb == "Passing Showers" || weatherAbb == "Showers" || weatherAbb == "Thunder Showers") {
+                score = 3;
+            }
+
+            return score;
+        }
+
+        public int computeRegionScore(double baseValue, double comparedValue) {
+            int score = 0;
+
+            double average = 0;
+
+            average = comparedValue / 5;
+
+            if (baseValue > average) {
+                score = 1;
+            }
+
+            return score;
+        }
+
+        public int computeLocationScore(double baseValue, double comparedValue, double noOfLocationInZone) {
+            int score = 0;
+
+            double average = 0, qtrAmt = 0;
+
+            System.Diagnostics.Debug.WriteLine("baseValue: " + baseValue);
+            System.Diagnostics.Debug.WriteLine("comparedValue: " + comparedValue);
+            System.Diagnostics.Debug.WriteLine("noOfLocationInZone: " + noOfLocationInZone);
+
+            //get average and lower quartile
+            average = comparedValue / noOfLocationInZone;
+            qtrAmt = 0.25 * average;
+
+            if (baseValue >= average)
+            {
+                score = 3;
+            }
+            else if (baseValue >= qtrAmt)
+            {
+                score = 2;
+            }
+            else if (baseValue < qtrAmt)
+            {
+                score = 1;
+            }
+
+            return score;
+        }
+
+        public void convertZone(string zone) {
+
+            if (zone == "C")
+            {
+                ViewBag.region = "Central";
+                ViewBag.regionNumber = 4;
+            }
+            else if (zone == "N")
+            {
+                ViewBag.region = "North";
+                ViewBag.regionNumber = 0;
+            }
+            else if (zone == "S")
+            {
+                ViewBag.region = "South";
+                ViewBag.regionNumber = 1;
+            }
+            else if (zone == "E")
+            {
+                ViewBag.region = "East";
+                ViewBag.regionNumber = 2;
+            }
+            else if (zone == "W")
+            {
+                ViewBag.region = "West";
+                ViewBag.regionNumber = 3;
+            }
+
+            return;
         }
 
         public ActionResult DrawDengueClusterRegionChart(int chartRegion)
@@ -415,6 +460,44 @@ namespace Dengue.Controllers
             chart.SaveImage(Server.MapPath("~/Content/OverallChart"), ChartImageFormat.Jpeg);
             // Return the contents of the Stream to the client
             return base.File(Server.MapPath("~/Content/OverallChart"), "jpeg");
+        }
+
+        public void setWeatherDropdown() {
+            IEnumerable<Weather> weatherAll = Weathergateway.SelectAll();
+            List<SelectListItem> weatherLocationList = new List<SelectListItem>();
+
+            Boolean jurongAdded = false;
+
+            foreach (Weather w in weatherAll)
+            {
+                if (w.Locations == "JURONG EAST/WEST" || w.Locations == "JURONG INDUSTRIAL ESTATE" || w.Locations == "JURONG ISLAND")
+                {
+                    if (jurongAdded == false)
+                    {
+                        weatherLocationList.Add(new SelectListItem() { Text = "JURONG", Value = "JURONG;" + w.Zone + ";" + w.Forecast });
+                        jurongAdded = true;
+                    }
+                }
+                else if(w.Locations == "HOLLAND VILLAGE")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "HOLLAND VILLAGE", Value = "HOLLAND;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations == "CITY")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "ORCHARD", Value = "ORCHARD;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations == "MACRITCHIE RESERVOIR") {
+                    weatherLocationList.Add(new SelectListItem() { Text = "MACRITCHIE", Value = "MACRITCHIE;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations != "PULAU TEKONG" && w.Locations != "PULAU UBIN" && w.Locations != "PEIRCE RESERVOIR" && w.Locations != "SOUTHERN ISLAND")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
+                }
+            }
+
+            ViewBag.Weather = weatherLocationList;
+
+            return;
         }
 
     }
