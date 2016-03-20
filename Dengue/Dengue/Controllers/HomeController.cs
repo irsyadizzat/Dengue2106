@@ -39,11 +39,11 @@ namespace Dengue.Controllers
 
             //ViewBag.dengueHistory = DengueCHgateway.SelectAll();
             //IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();
-            DrawDengueHistoryChart();
+           
 
             return View();
         }
-        public void DrawDengueHistoryChart()
+        public ActionResult DrawDengueHistoryChart()
         {
             IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();
             int count = dengueHistory.Count();
@@ -54,14 +54,14 @@ namespace Dengue.Controllers
 
             foreach (DengueCaseHistory DCH in dengueHistory)
             {
-                x[k] = DCH.Epi_Week.ToString();
+                x[k] = "W"+DCH.Epi_Week.ToString();
                 y[k] = DCH.No_of_Cases;
                 k++;
             }
 
             Chart chart = new Chart();
             chart.Width = 360;
-            chart.Height = 455;
+            chart.Height = 270;
 
             Title t = new Title();
             t.Text = "Dengue Cases History Chart";
@@ -73,14 +73,12 @@ namespace Dengue.Controllers
 
             Series dataS = new Series("Data");
 
-            dataS.ChartType = SeriesChartType.Bar;
-            dataS["PieLabelStyle"] = "Outside";
-            dataS["PieLineColor"] = "Black";
+            dataS.ChartType = SeriesChartType.Column;
 
             for (int i = 0; i < x.Length; i++)
             {
                 dataS.Points.AddXY(x[i], y[i]);
-                dataS.Label = "#VALX\n   #VALY";
+                dataS.Label = "#VALY";
             }
 
             chart.Series.Add(dataS);
@@ -92,7 +90,7 @@ namespace Dengue.Controllers
 
             chart.SaveImage(Server.MapPath("~/Content/DengueClusterRegionChart"), ChartImageFormat.Jpeg);
             // Return the contents of the Stream to the client
-          //  return base.File(Server.MapPath("~/Content/DengueClusterRegionChart"), "jpeg");
+            return base.File(Server.MapPath("~/Content/DengueClusterRegionChart"), "jpeg");
         }
 
         // GET: DengueClusters
@@ -179,6 +177,7 @@ namespace Dengue.Controllers
 
         public ActionResult EvaluateArea(string weather)
         {
+            ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
             //0 = street name, 1 = zone, 2 = forecast
             string[] passedWeatherInfo = weather.Split(';');
             int noOfLocationInZone = 0;
