@@ -37,10 +37,63 @@ namespace Dengue.Controllers
             //BHgateway.uploadBreedingHabitat();
             //BHgateway.getDate();
 
+            //ViewBag.dengueHistory = DengueCHgateway.SelectAll();
+            //IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();
+            DrawDengueHistoryChart();
 
             return View();
         }
+        public void DrawDengueHistoryChart()
+        {
+            IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();
+            int count = dengueHistory.Count();
+            int k = 0;
+            string[] x = new string[count];
 
+            int[] y = new int[count];
+
+            foreach (DengueCaseHistory DCH in dengueHistory)
+            {
+                x[k] = DCH.Epi_Week.ToString();
+                y[k] = DCH.No_of_Cases;
+                k++;
+            }
+
+            Chart chart = new Chart();
+            chart.Width = 360;
+            chart.Height = 455;
+
+            Title t = new Title();
+            t.Text = "Dengue Cases History Chart";
+
+            chart.Titles.Add(t);
+
+            ChartArea ca = new ChartArea();
+            chart.ChartAreas.Add(ca);
+
+            Series dataS = new Series("Data");
+
+            dataS.ChartType = SeriesChartType.Bar;
+            dataS["PieLabelStyle"] = "Outside";
+            dataS["PieLineColor"] = "Black";
+
+            for (int i = 0; i < x.Length; i++)
+            {
+                dataS.Points.AddXY(x[i], y[i]);
+                dataS.Label = "#VALX\n   #VALY";
+            }
+
+            chart.Series.Add(dataS);
+           // chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
+
+            //chart.Legends.Add(new Legend("Location"));
+            //chart.Series["Data"].Legend = "Location";
+            //chart.Legends["Location"].Docking = Docking.Top;
+
+            chart.SaveImage(Server.MapPath("~/Content/DengueClusterRegionChart"), ChartImageFormat.Jpeg);
+            // Return the contents of the Stream to the client
+          //  return base.File(Server.MapPath("~/Content/DengueClusterRegionChart"), "jpeg");
+        }
 
         // GET: DengueClusters
         public ActionResult Case(string search, string sortCases)
