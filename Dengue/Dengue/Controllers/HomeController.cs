@@ -64,7 +64,7 @@ namespace Dengue.Controllers
             chart.Height = 270;
 
             Title t = new Title();
-            t.Text = "Dengue Cases History Chart";
+            t.Text = "Dengue Cases History Chart As Of 2016";
 
             chart.Titles.Add(t);
 
@@ -82,11 +82,13 @@ namespace Dengue.Controllers
             }
 
             chart.Series.Add(dataS);
-           // chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
+            // chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
 
-            //chart.Legends.Add(new Legend("Location"));
+            // chart.Legends.Add(new Legend("Location"));
             //chart.Series["Data"].Legend = "Location";
-            //chart.Legends["Location"].Docking = Docking.Top;
+            // chart.Legends["Location"].Docking = Docking.Top;
+
+
 
             chart.SaveImage(Server.MapPath("~/Content/DengueClusterRegionChart"), ChartImageFormat.Jpeg);
             // Return the contents of the Stream to the client
@@ -124,6 +126,40 @@ namespace Dengue.Controllers
             setWeatherDropdown();
 
             return View(dengueClusterAll);
+        }
+
+        // GET: BreedingHabitat
+        public ActionResult bHCase(string search, string sortCases)
+        {
+            ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
+
+
+            IEnumerable<BreedingHabitat> bH = BHgateway.SelectAll();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.ToUpper();
+                bH = bH.Where(d => d.Location.ToUpper().Contains(search));
+            }
+            else
+            {
+                ViewBag.PriceSortParm = String.IsNullOrEmpty(sortCases) ? "case_desc" : "";
+                switch (sortCases)
+                {
+
+                    case "case_desc":
+                        bH = BHgateway.Order("case_desc", bH);
+                        break;
+                    default:
+                        bH = BHgateway.Order("default", bH);
+
+                        break;
+                }
+            }
+
+            setWeatherDropdown();
+
+            return View(bH);
         }
 
         public ActionResult About()
