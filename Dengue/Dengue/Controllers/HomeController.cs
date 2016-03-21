@@ -54,7 +54,7 @@ namespace Dengue.Controllers
 
             foreach (DengueCaseHistory DCH in dengueHistory)
             {
-                x[k] = "W"+DCH.Epi_Week.ToString();
+                x[k] = DCH.Epi_Week.ToString();
                 y[k] = DCH.No_of_Cases;
                 k++;
             }
@@ -69,6 +69,8 @@ namespace Dengue.Controllers
             chart.Titles.Add(t);
 
             ChartArea ca = new ChartArea();
+            ca.AxisX.Title = "Week";
+            ca.AxisY.Title = "Number of Cases";
             chart.ChartAreas.Add(ca);
 
             Series dataS = new Series("Data");
@@ -83,7 +85,7 @@ namespace Dengue.Controllers
 
             chart.Series.Add(dataS);
             // chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
-
+            
             // chart.Legends.Add(new Legend("Location"));
             //chart.Series["Data"].Legend = "Location";
             // chart.Legends["Location"].Docking = Docking.Top;
