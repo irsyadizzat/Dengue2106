@@ -238,6 +238,13 @@ namespace Dengue.Controllers
                 {
                     weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
                 }
+
+                if (weather != null) {
+                    if (w.Zone == passedWeatherInfo[1]) {
+                        noOfLocationInZone++;
+                        ViewBag.noOfLocationInZone = noOfLocationInZone;
+                    }
+                }
             }
             ViewBag.Weather = weatherLocationList;
 
@@ -297,7 +304,7 @@ namespace Dengue.Controllers
                 //set street name
                 ViewBag.street = passedWeatherInfo[0];
                 //set region name and region number
-                convertZone(passedWeatherInfo[1]);
+                convertShortToLongZone(passedWeatherInfo[1]);
 
                 //to check if a value is chosen
                 ViewBag.selectedEvaluateArea = true;
@@ -371,7 +378,7 @@ namespace Dengue.Controllers
             return score;
         }
 
-        public void convertZone(string zone) {
+        public void convertShortToLongZone(string zone) {
 
             if (zone == "C")
             {
@@ -402,71 +409,73 @@ namespace Dengue.Controllers
             return;
         }
 
-        public ActionResult DrawDengueClusterRegionChart(int chartRegion)
+        public string convertLongToShortZone(int regionNumber)
         {
-            string[] x = new string[5] { "North", "South", "East", "West", "Central" };
-           
-            int[] y = new int[5] {
-                DengueClustergateway.getCasesRegion("N"),
-                DengueClustergateway.getCasesRegion("S"),
-                DengueClustergateway.getCasesRegion("E"),
-                DengueClustergateway.getCasesRegion("W"),
-                DengueClustergateway.getCasesRegion("C")
-            };
+            string zone = "";
 
-            Chart chart = new Chart();
-            chart.Width = 360;
-            chart.Height = 455;
-
-            Title t = new Title();
-            t.Text = "Dengue Cluster Chart (By Region)";
-
-            chart.Titles.Add(t);
-
-            ChartArea ca = new ChartArea();
-            chart.ChartAreas.Add(ca);
-
-            Series dataS = new Series("Data");
-
-            dataS.ChartType = SeriesChartType.Pie;
-            dataS["PieLabelStyle"] = "Outside";
-            dataS["PieLineColor"] = "Black";
-
-            for (int i = 0; i < x.Length; i++)
+            if (regionNumber == 0)
             {
-                dataS.Points.AddXY(x[i], y[i]);
-                dataS.Label = "#VALX\n   #VALY";
+                zone = "North";
+            }
+            else if (regionNumber == 1)
+            {
+                zone = "South";
+            }
+            else if (regionNumber == 2)
+            {
+                zone = "East";
+            }
+            else if (regionNumber == 3)
+            {
+                zone = "West";
+            }
+            else if (regionNumber == 4)
+            {
+                zone = "Central";
             }
 
-            chart.Series.Add(dataS);
-            chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
-
-            //chart.Legends.Add(new Legend("Location"));
-            //chart.Series["Data"].Legend = "Location";
-            //chart.Legends["Location"].Docking = Docking.Top;
-
-            chart.SaveImage(Server.MapPath("~/Content/DengueClusterRegionChart"), ChartImageFormat.Jpeg);
-            // Return the contents of the Stream to the client
-            return base.File(Server.MapPath("~/Content/DengueClusterRegionChart"), "jpeg");
+            return zone;
         }
 
-        public ActionResult DrawBreedingHabitatRegionChart(int chartRegion)
+        public ActionResult DrawRegionChart(int chartRegion, int noOfLocationInZone, string street, string type)
         {
-            string[] x = new string[5] { "North", "South", "East", "West", "Central" };
-            int[] y = new int[5] {
-                BHgateway.getCasesRegion("N"),
-                BHgateway.getCasesRegion("S"),
-                BHgateway.getCasesRegion("E"),
-                BHgateway.getCasesRegion("W"),
-                BHgateway.getCasesRegion("C")
-            };
+            string zone = convertLongToShortZone(chartRegion);
+
+            string[] x = new string[2] { street, "Other Areas in "+zone };
+            int[] y;
 
             Chart chart = new Chart();
             chart.Width = 360;
             chart.Height = 455;
 
             Title t = new Title();
-            t.Text = "Breeding Habitat Chart (By Region)";
+
+            int noOfCaseLocation, noOfRegionLocation, result;
+
+            if (type == "DengueCluster")
+            {
+                noOfCaseLocation = DengueClustergateway.getCasesLocation(street);
+                noOfRegionLocation = DengueClustergateway.getCasesRegion(zone.Substring(0, 1));
+                result = noOfRegionLocation - noOfCaseLocation;
+
+                y = new int[2] {
+                    result,
+                    noOfCaseLocation
+                };
+                t.Text = "Dengue Cluster Chart (In Region)";
+            }
+            else {
+
+                noOfCaseLocation = BHgateway.getCasesLocation(street);
+                noOfRegionLocation = BHgateway.getCasesRegion(zone.Substring(0, 1));
+                result = noOfRegionLocation - noOfCaseLocation;
+
+                y = new int[2] {
+                    result,
+                    noOfCaseLocation
+                };
+                t.Text = "Breeding Habitat Chart (In Region)";
+            }            
 
             chart.Titles.Add(t);
 
@@ -486,35 +495,51 @@ namespace Dengue.Controllers
             }
 
             chart.Series.Add(dataS);
-            chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
+            chart.Series["Data"].Points[0]["Exploded"] = "True";
 
             //chart.Legends.Add(new Legend("Location"));
             //chart.Series["Data"].Legend = "Location";
             //chart.Legends["Location"].Docking = Docking.Top;
 
-            chart.SaveImage(Server.MapPath("~/Content/BreedingHabitatRegionChart"), ChartImageFormat.Jpeg);
+            chart.SaveImage(Server.MapPath("~/Content/"+ type +"Chart"), ChartImageFormat.Jpeg);
             // Return the contents of the Stream to the client
-            return base.File(Server.MapPath("~/Content/BreedingHabitatRegionChart"), "jpeg");
+            return base.File(Server.MapPath("~/Content/" + type + "Chart"), "jpeg");
         }
 
-        public ActionResult DrawOverallChart(int chartRegion)
+        public ActionResult DrawOverallChart(int chartRegion, string type)
         {
             string[] x = new string[5] { "North", "South", "East", "West", "Central" };
-            int[] y = new int[5] {
-                DengueClustergateway.getCasesRegion("N") + BHgateway.getCasesRegion("N"),
-                DengueClustergateway.getCasesRegion("S") + BHgateway.getCasesRegion("S"),
-                DengueClustergateway.getCasesRegion("E") + BHgateway.getCasesRegion("E"),
-                DengueClustergateway.getCasesRegion("W") + BHgateway.getCasesRegion("W"),
-                DengueClustergateway.getCasesRegion("C") + BHgateway.getCasesRegion("C")
-            };
+            int[] y;
 
             Chart chart = new Chart();
             chart.Width = 360;
             chart.Height = 455;
 
             Title t = new Title();
-            t.Text = "Overall Chart (Breeding Habitat + Dengue Cluster) (By Region)";
 
+            if (type == "DengueCluster")
+            {
+                y = new int[5] {
+                    DengueClustergateway.getCasesRegion("N"),
+                    DengueClustergateway.getCasesRegion("S"),
+                    DengueClustergateway.getCasesRegion("E"),
+                    DengueClustergateway.getCasesRegion("W"),
+                    DengueClustergateway.getCasesRegion("C")
+                };
+                t.Text = "Dengue Cluster Chart (In Singapore)";
+            }
+            else
+            {
+                y = new int[5] {
+                    BHgateway.getCasesRegion("N"),
+                    BHgateway.getCasesRegion("S"),
+                    BHgateway.getCasesRegion("E"),
+                    BHgateway.getCasesRegion("W"),
+                    BHgateway.getCasesRegion("C")
+                };
+                t.Text = "Breeding Habitat Chart (In Singapore)";
+            }
+            
             chart.Titles.Add(t);
 
             ChartArea ca = new ChartArea();
@@ -539,9 +564,9 @@ namespace Dengue.Controllers
             //chart.Series["Data"].Legend = "Location";
             //chart.Legends["Location"].Docking = Docking.Top;
 
-            chart.SaveImage(Server.MapPath("~/Content/OverallChart"), ChartImageFormat.Jpeg);
+            chart.SaveImage(Server.MapPath("~/Content/Overall"+ type + "Chart"), ChartImageFormat.Jpeg);
             // Return the contents of the Stream to the client
-            return base.File(Server.MapPath("~/Content/OverallChart"), "jpeg");
+            return base.File(Server.MapPath("~/Content/Overall" + type + "Chart"), "jpeg");
         }
 
         public void setWeatherDropdown() {

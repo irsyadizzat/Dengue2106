@@ -8,7 +8,7 @@
 <!-- RIGHT SIDE-->
 <div class="row" style=" height:100%; min-height:500px;">
     <!--MAIN-->
-    <div class="col-md-9" style="height:1050px; padding-right:0px;">
+    <div class="col-md-9" style="height:800px; padding-right:0px;">
         <div style="border-radius:8px; border: 1px solid #a09e9e;">
             <div class="main-header"><h2 style="font-size: 22px; color:#66757f; margin:20px 0px 0px 15px;">Result</h2><hr /></div>
             <!--CONTENT GOES HERE-->
@@ -86,20 +86,25 @@
                                             <li data-target="#dengueCarousel" data-slide-to="0" class="active"></li>
                                             <li data-target="#dengueCarousel" data-slide-to="1"></li>
                                             <li data-target="#dengueCarousel" data-slide-to="2"></li>
+                                            <li data-target="#dengueCarousel" data-slide-to="3"></li>
                                         </ol>
 
                                         <!-- Wrapper for slides -->
                                         <div class="carousel-inner" role="listbox">
                                             <div class="item active" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawDengueClusterRegionChart", "Home", new { chartRegion = @ViewBag.regionNumber })" />
+                                                <img src="@Url.Action("DrawRegionChart", "Home", new { chartRegion = @ViewBag.regionNumber, noOfLocationInZone = ViewBag.noOfLocationInZone, street = @ViewBag.street, type = "DengueCluster" })" />
                                             </div>
 
                                             <div class="item" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawBreedingHabitatRegionChart", "Home", new { chartRegion = @ViewBag.regionNumber })" />
+                                                <img src="@Url.Action("DrawRegionChart", "Home", new { chartRegion = @ViewBag.regionNumber, noOfLocationInZone = ViewBag.noOfLocationInZone, street = @ViewBag.street, type = "BreedingHabitat" })" />
                                             </div>
 
                                             <div class="item" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = @ViewBag.regionNumber })" />
+                                                <img src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = @ViewBag.regionNumber , type = "DengueCluster"})" />
+                                            </div>
+
+                                            <div class="item" style="margin-left:20px;">
+                                                <img src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = @ViewBag.regionNumber , type = "BreedingHabitat"})" />
                                             </div>
                                         </div>
 
