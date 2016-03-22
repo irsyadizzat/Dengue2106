@@ -16,191 +16,81 @@ namespace Dengue.Controllers
     {
         private DengueClusterGateway DengueClustergateway = new DengueClusterGateway();
         private DengueContext db = new DengueContext();
+        private WeatherGateway Weathergateway = new WeatherGateway();
+        IEnumerable<DengueCluster> dengueClusterAll;
 
         // GET: DengueClusters
-        public ActionResult Index()
+        public ActionResult Index(string search, string sortCases)
         {
-            //IEnumerable<DengueCluster> data = DengueClustergateway.SelectAll();
-            //foreach (DengueCluster dc in data)
-            //{
-            //    DengueClustergateway.Delete(dc.DCluster_ID);
-            //}
-            //List<string> tempstring = new List<string>();
-            //List<string> locations = new List<string>();
-            //List<string> cases = new List<string>();
-            //List<string> hyperlink = new List<string>();
-            //List<string> coordinates = new List<string>();
+            ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
+            // ViewData["noDengueCase"] = denguecases;
 
-            //WebClient web = new WebClient();
-            //String html = web.DownloadString("file:///C:/Users/IzzatLaptop/Desktop/XML%20File/dengue-clusters.kml");
-            //MatchCollection m1 = Regex.Matches(html, @"<td>\s*(.+?)\s*</td>", RegexOptions.Singleline);
-            //MatchCollection m2 = Regex.Matches(html, @"href=\s*(.+?)\s*>", RegexOptions.Singleline);
-            //MatchCollection m3 = Regex.Matches(html, @"<coordinates>\s*(.+?)\s*</coordinates>", RegexOptions.Singleline);
-
-            ////locations and cases
-            //foreach (Match m in m1)
-            //{
-
-            //    string test = m.Groups[1].Value;
-            //    tempstring.Add(test);
-            //}
-
-            ////hyperlink
-            //foreach (Match m in m2)
-            //{
-
-            //    string test = m.Groups[1].Value;
-            //    hyperlink.Add(test);
-            //}
-
-            ////coordinates
-            //foreach (Match m in m3)
-            //{
-
-            //    string test = m.Groups[1].Value;
-            //    coordinates.Add(test);
-            //}
-
-            ////cases
-            //for (int i = 6; i < tempstring.Count; i += 15)
-            //{
-            //    string newthingy = tempstring[i];
-            //    cases.Add(newthingy);
-            //}
-
-            ////locations
-            //for (int i = 4; i < tempstring.Count; i += 15)
-            //{
-            //    string newthingy = tempstring[i];
-            //    locations.Add(newthingy);
-            //}
-
-            //DengueCluster dengueCluster = new DengueCluster();
-
-            //for (int j = 0; j < locations.Count; j++)
-            //{
-            //    dengueCluster.Description = locations[j];
-            //    dengueCluster.No_of_Cases = Int32.Parse(cases[j]);
-            //    dengueCluster.Hyperlink = hyperlink[j];
-            //    dengueCluster.Coordinates = coordinates[j];
-            //    dengueCluster.Alert_Level = "0";
-            //    dengueCluster.Upload_Date = DateTime.Now.Date.ToShortDateString();
-            //    DengueClustergateway.Insert(dengueCluster);
-            //    db.SaveChanges();
-            //}
-
-
-            return View(DengueClustergateway.SelectAll());
-        }
-
-        // GET: DengueClusters/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
+            dengueClusterAll = DengueClustergateway.SelectAll();
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                search = search.ToUpper();
+                dengueClusterAll = dengueClusterAll.Where(d => d.Description.ToUpper().Contains(search));
             }
-            DengueCluster dengueCluster = DengueClustergateway.SelectById(id);
-            if (dengueCluster == null)
+            else
             {
-                return HttpNotFound();
-            }
-            return View(dengueCluster);
-        }
+                ViewBag.PriceSortParm = String.IsNullOrEmpty(sortCases) ? "case_desc" : "";
+                switch (sortCases)
+                {
 
-        // GET: DengueClusters/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+                    case "case_desc":
+                        dengueClusterAll = DengueClustergateway.Order("case_desc", dengueClusterAll);
+                        break;
+                    default:
+                        dengueClusterAll = DengueClustergateway.Order("default", dengueClusterAll);
 
-        // POST: DengueClusters/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Description,No_of_Cases,Hyperlink,Coordinates,Alert_Level,Upload_Date")] DengueCluster dengueCluster)
-        {
-            if (ModelState.IsValid)
-            {
-                DengueClustergateway.Insert(dengueCluster);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                        break;
+                }
             }
 
-            return View(dengueCluster);
+            setWeatherDropdown();
+
+            return View(dengueClusterAll);
         }
 
-        // GET: DengueClusters/Edit/5
-        public ActionResult Edit(int? id)
+        public void setWeatherDropdown()
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            DengueCluster dengueCluster = DengueClustergateway.SelectById(id);
-            if (dengueCluster == null)
-            {
-                return HttpNotFound();
-            }
-            return View(dengueCluster);
-        }
+            IEnumerable<Weather> weatherAll = Weathergateway.SelectAll();
+            List<SelectListItem> weatherLocationList = new List<SelectListItem>();
 
-        // POST: DengueClusters/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Description,No_of_Cases,Hyperlink,Coordinates,Alert_Level,Upload_Date")] DengueCluster dengueCluster)
-        {
-            if (ModelState.IsValid)
-            {
-                DengueClustergateway.Update(dengueCluster);
-                return RedirectToAction("Index");
-            }
-            return View(dengueCluster);
-        }
+            Boolean jurongAdded = false;
 
-        // GET: DengueClusters/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
+            foreach (Weather w in weatherAll)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (w.Locations == "JURONG EAST/WEST" || w.Locations == "JURONG INDUSTRIAL ESTATE" || w.Locations == "JURONG ISLAND")
+                {
+                    if (jurongAdded == false)
+                    {
+                        weatherLocationList.Add(new SelectListItem() { Text = "JURONG", Value = "JURONG;" + w.Zone + ";" + w.Forecast });
+                        jurongAdded = true;
+                    }
+                }
+                else if (w.Locations == "HOLLAND VILLAGE")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "HOLLAND VILLAGE", Value = "HOLLAND;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations == "CITY")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "ORCHARD", Value = "ORCHARD;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations == "MACRITCHIE RESERVOIR")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "MACRITCHIE", Value = "MACRITCHIE;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations != "PULAU TEKONG" && w.Locations != "PULAU UBIN" && w.Locations != "PEIRCE RESERVOIR" && w.Locations != "SOUTHERN ISLAND")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
+                }
             }
-            DengueCluster dengueCluster = DengueClustergateway.SelectById(id);
-            if (dengueCluster == null)
-            {
-                return HttpNotFound();
-            }
-            return View(dengueCluster);
-        }
 
-        // POST: DengueClusters/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            DengueCluster dengueCluster = DengueClustergateway.SelectById(id);
-            DengueClustergateway.Delete(id);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+            ViewBag.Weather = weatherLocationList;
 
-        // GET: DengueClusters/Create
-        [HttpPost]
-        public ActionResult Upload()
-        {
-            return View();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
+            return;
         }
     }
+
 }

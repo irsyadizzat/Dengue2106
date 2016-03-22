@@ -14,112 +14,80 @@ namespace Dengue.Controllers
     public class BreedingHabitatsController : Controller
     {
         private BHGateway BHgateway = new BHGateway();
-        public ActionResult Index()
+        private DengueContext db = new DengueContext();
+        private WeatherGateway Weathergateway = new WeatherGateway();
+        private DengueClusterGateway DengueClustergateway = new DengueClusterGateway();
+
+        public ActionResult Index(string search, string sortCases)
         {
-            return View(BHgateway.SelectAll());
+            ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
+
+
+            IEnumerable<BreedingHabitat> bH = BHgateway.SelectAll();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.ToUpper();
+                bH = bH.Where(d => d.Location.ToUpper().Contains(search));
+            }
+            else
+            {
+                ViewBag.PriceSortParm = String.IsNullOrEmpty(sortCases) ? "case_desc" : "";
+                switch (sortCases)
+                {
+
+                    case "case_desc":
+                        bH = BHgateway.Order("case_desc", bH);
+                        break;
+                    default:
+                        bH = BHgateway.Order("default", bH);
+
+                        break;
+                }
+            }
+
+            setWeatherDropdown();
+
+            return View(bH);
         }
-
-        //
-        // GET: /Booking/Details/5
-        public ActionResult Details(int? id)
+        public void setWeatherDropdown()
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            BreedingHabitat BH = BHgateway.SelectById(id);
-            if (BH == null)
-            {
-                return HttpNotFound();
-            }
-            return View(BH);
-        }
+            IEnumerable<Weather> weatherAll = Weathergateway.SelectAll();
+            List<SelectListItem> weatherLocationList = new List<SelectListItem>();
 
-        //
-        // GET: /Booking/Create
-        public ActionResult Create(int? id, string name)
-        {
+            Boolean jurongAdded = false;
 
-                return View();
-            
-            //BreedingHabitat booking = new BreedingHabitat();
-            //booking.TourID = (int)id;
-            //booking.TourName = name;
-            //booking.DepartureDate = DateTime.Now;
-            //return View(booking);
-        }
-
-        //
-        // POST: /Booking/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Reporter_Name,Contact_No,Email,Location,Longitude,Latitude,Details,Reported_Date,Status,Upload_Date")] BreedingHabitat BH)
-        {
-            if (ModelState.IsValid)
+            foreach (Weather w in weatherAll)
             {
-                BHgateway.Insert(BH);
-                return RedirectToAction("Index");
+                if (w.Locations == "JURONG EAST/WEST" || w.Locations == "JURONG INDUSTRIAL ESTATE" || w.Locations == "JURONG ISLAND")
+                {
+                    if (jurongAdded == false)
+                    {
+                        weatherLocationList.Add(new SelectListItem() { Text = "JURONG", Value = "JURONG;" + w.Zone + ";" + w.Forecast });
+                        jurongAdded = true;
+                    }
+                }
+                else if (w.Locations == "HOLLAND VILLAGE")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "HOLLAND VILLAGE", Value = "HOLLAND;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations == "CITY")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "ORCHARD", Value = "ORCHARD;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations == "MACRITCHIE RESERVOIR")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = "MACRITCHIE", Value = "MACRITCHIE;" + w.Zone + ";" + w.Forecast });
+                }
+                else if (w.Locations != "PULAU TEKONG" && w.Locations != "PULAU UBIN" && w.Locations != "PEIRCE RESERVOIR" && w.Locations != "SOUTHERN ISLAND")
+                {
+                    weatherLocationList.Add(new SelectListItem() { Text = w.Locations, Value = w.Locations + ";" + w.Zone + ";" + w.Forecast });
+                }
             }
 
-            return View(BH);
-        }
+            ViewBag.Weather = weatherLocationList;
 
-        //
-        // GET: /Booking/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            BreedingHabitat BH = BHgateway.SelectById(id);
-            if (BH == null)
-            {
-                return HttpNotFound();
-            }
-            return View(BH);
-        }
-
-        //
-        // POST: /Booking/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Reporter_Name,Contact_No,Email,Location,Longitude,Latitude,Details,Reported_Date,Status,Upload_Date")] BreedingHabitat BH)
-        {
-            if (ModelState.IsValid)
-            {
-                BHgateway.Update(BH);
-                return RedirectToAction("Index");
-            }
-            return View(BH);
-        }
-
-        //
-        // GET: /Booking/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            BreedingHabitat BH = BHgateway.SelectById(id);
-            if (BH == null)
-            {
-                return HttpNotFound();
-            }
-            return View(BH);
-        }
-
-        //
-        // POST: /Booking/Delete/5
-        // POST: Booking/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            BHgateway.Delete(id);
-
-            return RedirectToAction("Index");
+            return;
         }
     }
 }

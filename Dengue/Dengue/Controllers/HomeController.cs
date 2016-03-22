@@ -97,72 +97,72 @@ namespace Dengue.Controllers
             return base.File(Server.MapPath("~/Content/DengueClusterRegionChart"), "jpeg");
         }
 
-        // GET: DengueClusters
-        public ActionResult Case(string search, string sortCases)
-        {
-            ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
-            // ViewData["noDengueCase"] = denguecases;
-
-            dengueClusterAll = DengueClustergateway.SelectAll();
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.ToUpper();
-                dengueClusterAll = dengueClusterAll.Where(d => d.Description.ToUpper().Contains(search));
-            }
-            else
-            {
-                ViewBag.PriceSortParm = String.IsNullOrEmpty(sortCases) ? "case_desc" : "";
-                switch (sortCases)
+    /*          // GET: DengueClusters
+                public ActionResult Case(string search, string sortCases)
                 {
+                    ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
+                    // ViewData["noDengueCase"] = denguecases;
 
-                    case "case_desc":
-                        dengueClusterAll = DengueClustergateway.Order("case_desc", dengueClusterAll);
-                        break;
-                    default:
-                        dengueClusterAll = DengueClustergateway.Order("default", dengueClusterAll);
+                    dengueClusterAll = DengueClustergateway.SelectAll();
+                    if (!string.IsNullOrWhiteSpace(search))
+                    {
+                        search = search.ToUpper();
+                        dengueClusterAll = dengueClusterAll.Where(d => d.Description.ToUpper().Contains(search));
+                    }
+                    else
+                    {
+                        ViewBag.PriceSortParm = String.IsNullOrEmpty(sortCases) ? "case_desc" : "";
+                        switch (sortCases)
+                        {
 
-                        break;
+                            case "case_desc":
+                                dengueClusterAll = DengueClustergateway.Order("case_desc", dengueClusterAll);
+                                break;
+                            default:
+                                dengueClusterAll = DengueClustergateway.Order("default", dengueClusterAll);
+
+                                break;
+                        }
+                    }
+
+                    setWeatherDropdown();
+
+                    return View(dengueClusterAll);
                 }
-            }
 
-            setWeatherDropdown();
-
-            return View(dengueClusterAll);
-        }
-
-        // GET: BreedingHabitat
-        public ActionResult bHCase(string search, string sortCases)
-        {
-            ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
-
-
-            IEnumerable<BreedingHabitat> bH = BHgateway.SelectAll();
-
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                search = search.ToUpper();
-                bH = bH.Where(d => d.Location.ToUpper().Contains(search));
-            }
-            else
-            {
-                ViewBag.PriceSortParm = String.IsNullOrEmpty(sortCases) ? "case_desc" : "";
-                switch (sortCases)
+              // GET: BreedingHabitat
+                public ActionResult bHCase(string search, string sortCases)
                 {
+                    ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
 
-                    case "case_desc":
-                        bH = BHgateway.Order("case_desc", bH);
-                        break;
-                    default:
-                        bH = BHgateway.Order("default", bH);
 
-                        break;
-                }
-            }
+                    IEnumerable<BreedingHabitat> bH = BHgateway.SelectAll();
 
-            setWeatherDropdown();
+                    if (!string.IsNullOrWhiteSpace(search))
+                    {
+                        search = search.ToUpper();
+                        bH = bH.Where(d => d.Location.ToUpper().Contains(search));
+                    }
+                    else
+                    {
+                        ViewBag.PriceSortParm = String.IsNullOrEmpty(sortCases) ? "case_desc" : "";
+                        switch (sortCases)
+                        {
 
-            return View(bH);
-        }
+                            case "case_desc":
+                                bH = BHgateway.Order("case_desc", bH);
+                                break;
+                            default:
+                                bH = BHgateway.Order("default", bH);
+
+                                break;
+                        }
+                    }
+
+                    setWeatherDropdown();
+
+                    return View(bH);
+                }**/
 
         public ActionResult About()
         {
