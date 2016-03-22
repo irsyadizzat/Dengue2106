@@ -22,6 +22,28 @@ namespace Dengue.DAL
 
         List<string> cases = new List<string>();
 
+        internal IEnumerable<BreedingHabitat> Order(string sortOrder, IEnumerable<BreedingHabitat> bH)
+        {
+            bH = from t in SelectAll()
+                            select t;
+            switch (sortOrder)
+            {
+
+                case "case_desc":
+
+                    bH = bH.OrderByDescending(d => d.No_of_Cases);
+
+                    break;
+                case "default":
+                    bH = bH.OrderBy(d => d.No_of_Cases);
+
+                    break;
+            }
+            return bH.ToList();
+
+        }
+
+
         public int getNoCases()
         {
             int breedingCases = 0;

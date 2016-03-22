@@ -44,13 +44,13 @@
         controlText.style.lineHeight = '38px';
         controlText.style.paddingLeft = '5px';
         controlText.style.paddingRight = '5px';
-        controlText.innerHTML = 'Breeding Habitat';
+        controlText.innerHTML = 'View Breeding Habitat';
         controlUI.appendChild(controlText);
 
         // Setup the click event listeners: simply set the map to Chicago.
         controlUI.addEventListener('click', function () {
-            if (controlText.innerHTML == 'Breeding Habitat') {
-                controlText.innerHTML = 'Dengue Cluster';
+            if (controlText.innerHTML == 'View Breeding Habitat') {
+                controlText.innerHTML = 'View Dengue Cluster';
 
                 dcLayer.setMap(null);
                 for (var i = 0; i < bhLayer.length ; i++) {
@@ -58,7 +58,7 @@
                 }
             }
             else {
-                controlText.innerHTML = 'Breeding Habitat';
+                controlText.innerHTML = 'View Breeding Habitat';
 
                 for (var i = 0; i < bhLayer.length ; i++) {
                     bhLayer[i].setMap(null);

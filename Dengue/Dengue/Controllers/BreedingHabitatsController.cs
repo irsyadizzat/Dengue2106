@@ -16,7 +16,6 @@ namespace Dengue.Controllers
         private BHGateway BHgateway = new BHGateway();
         public ActionResult Index()
         {
-
             return View(BHgateway.SelectAll());
         }
 

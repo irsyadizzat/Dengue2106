@@ -1,0 +1,119 @@
+﻿@model IEnumerable<Dengue.Models.BreedingHabitat>
+
+@{
+    ViewBag.Title = "bHCase";
+}
+
+
+
+<style>
+    td {
+        word-wrap: break-word;
+    }
+</style>
+
+<div class="row" style=" height:100%; min-height:500px;">
+    <!--MAIN-->
+    <div class="col-md-9" style="height:800px; padding-right:0px;">
+        <div style="border-radius:8px; border: 1px solid #a09e9e;">
+            <div class="main-header"><h2 style="font-size: 22px; color:#66757f; margin:20px 0px 0px 15px;">Breeding Habitat</h2><hr /></div>
+            <!--CONTENT GOES HERE-->
+            <div style="margin:0px 0px 10px 15px;">
+                <div style="margin:0px 0px 15px 5px;">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.TextBox("search", "", new { placeholder = "Enter your search here" })
+                        <input type="submit" name="search" value="Search" />
+                    }
+                </div>
+
+                <div style="overflow:auto; height:640px; margin-right:3px;">
+                    <table class="table" style=" width:100%; " border="1">
+                        <tr>
+                            <th style="text-align:center;">
+                                @Html.DisplayNameFor(model => model.Location)
+                            </th>
+                            <th style="text-align:center;">
+                                @Html.ActionLink("Number of Cases", "bHCase", new { sortCases = ViewBag.PriceSortParm })
+
+                            </th>
+                            <th style="text-align:center;">
+                                View Breeding Habitat
+                            </th>
+                        </tr>
+
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td style="width:10%; max-width:530px;">
+                                    @Html.DisplayFor(modelItem => item.Location)
+                                </td>
+                                <td style="width:4%; text-align:center;">
+                                    @Html.DisplayFor(modelItem => item.No_of_Cases)
+                                </td>
+                                <td style="width:4%; text-align:center;">
+                                    @Html.DisplayFor(modelItem => item.zone)
+                                </td>
+                            </tr>
+                        }
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- RIGHT SIDE-->
+    <div class="col-md-3" style="height:100%; padding-left:7px;">
+        <div style="height:330px;">
+            <div style="border-style:solid; height:165px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:1px;">
+                <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:16px; color: #282020;">
+                    Cases reported this week as of 16/02/2016:
+                </div>
+                <div style="color: #2a6496; font-size:35px; text-align:center; padding-top:20px;">
+                    50
+                </div>
+            </div>
+            <div style="border-style:solid; height:165px; border-radius:8px; border: 1px solid #a09e9e; ">
+                <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:16px; color: #282020;">
+                    Cases reported this year as of 01/01/2016:
+                </div>
+                <div style="color: #2a6496; font-size:35px; text-align:center; padding-top:20px;">
+                    @ViewData["noDengueCase"]
+                </div>
+            </div>
+            <div style="border-radius:8px;  height:100%;">
+                <div style="height: 125px; margin-bottom:1px; border: 1px solid #a09e9e; border-radius:8px;">
+                    <div style="background-color: rgb(245,248,250); height:35px; text-align:center; padding-top:8px; color: #282020;">
+                        Report Case
+                    </div>
+                    <div id="toStyleDiv" style="height:150px; text-align:center; padding-top:10px; ">
+                        <span>See a potential dengue habitat?</span>
+                        <br />
+                        <button style="margin-top:8px;width:150px;" class="btn btn-danger"><span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> @Html.ActionLink("Contact Us", "ContactUs")</button>
+                    </div>
+                </div>
+                <div style="border: 1px solid #a09e9e; border-radius:8px; height:185px;">
+                    <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:8px; color: #282020;">
+                        Evaluate Area
+                        <p style="margin-top:5px;font-size: 11px; color: #8899a6;">Curious about the dengue condition in your area?<br> Let us check for you.</p>
+                    </div>
+                    <div>
+                        @using (Html.BeginForm("EvaluateArea", "Home"))
+                        {
+                            <div class="form-group" style="margin:8px 0px 15px 25px; width:80%; text-align:center;">
+                                <label for="exampleInputEmail1">Input your current area</label>
+                                @Html.DropDownList("Weather", ViewBag.myList as SelectList)
+                                <button style="margin-top:5px; width:150px;" type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Evaluate</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div style="height:120px; margin-top:1px;">
+                    <a href="https://www.facebook.com/Stop.Dengue.Now" target="_blank"><img style="margin-left:1px; margin-top:0.5px; height:99%; width:100%;" src="~/Content/Images/fb_dengue.jpg" /></a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
