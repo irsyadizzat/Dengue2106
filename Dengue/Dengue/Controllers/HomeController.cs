@@ -208,8 +208,9 @@ namespace Dengue.Controllers
         public ActionResult EvaluateArea(string weather)
         {
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
+            string[] passedWeatherInfo;
             //0 = street name, 1 = zone, 2 = forecast
-            string[] passedWeatherInfo = weather.Split(';');
+
             int noOfLocationInZone = 0;
             Boolean jurongAdded = false;
 
@@ -240,6 +241,7 @@ namespace Dengue.Controllers
                 }
 
                 if (weather != null) {
+                    passedWeatherInfo = weather.Split(';');
                     if (w.Zone == passedWeatherInfo[1]) {
                         noOfLocationInZone++;
                         ViewBag.noOfLocationInZone = noOfLocationInZone;
@@ -254,6 +256,7 @@ namespace Dengue.Controllers
             }
             else
             {
+                passedWeatherInfo = weather.Split(';');
                 //logic to get risk level
                 int dcLocationScore = 0, bhLocationScore = 0, 
                     dcRegionScore = 0, bhRegionScore = 0, 
