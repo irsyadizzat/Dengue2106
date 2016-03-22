@@ -37,9 +37,6 @@
                                 @Html.ActionLink("Number of Cases", "Index", new { sortCases = ViewBag.PriceSortParm })
 
                             </th>
-                            <th style="text-align:center;">
-                                View Breeding Habitat
-                            </th>
                         </tr>
 
                         @foreach (var item in Model)
@@ -50,9 +47,6 @@
                                 </td>
                                 <td style="width:4%; text-align:center;">
                                     @Html.DisplayFor(modelItem => item.No_of_Cases)
-                                </td>
-                                <td style="width:4%; text-align:center;">
-                                    @Html.DisplayFor(modelItem => item.zone)
                                 </td>
                             </tr>
                         }
