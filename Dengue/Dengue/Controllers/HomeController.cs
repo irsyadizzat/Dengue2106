@@ -9,28 +9,25 @@ using Dengue.Models;
 using System.Net.Mail;
 //using System.Web.Helpers;
 using System.Web.UI.DataVisualization.Charting;
+using System.IO;
+using System.Text;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace Dengue.Controllers
 {
     public class HomeController : Controller
     {
-
+        ResultModel rM = new ResultModel();
         private DengueClusterGateway DengueClustergateway = new DengueClusterGateway();
         private WeatherGateway Weathergateway = new WeatherGateway();
         private DengueContext db = new DengueContext();
         private DengueCHGateway DengueCHgateway = new DengueCHGateway();
         private BHGateway BHgateway = new BHGateway();
 
-        IEnumerable<DengueCluster> dengueClusterAll;
-
-
-
         // GET: DengueClusters
         public ActionResult Index()
         {
-            System.Diagnostics.Debug.WriteLine("WOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
-            setWeatherDropdown();
-
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
             //Weathergateway.getWeatherData();
             //DengueCHgateway.uploadDengueCH();
@@ -38,11 +35,11 @@ namespace Dengue.Controllers
             //BHgateway.getDate();
 
             //ViewBag.dengueHistory = DengueCHgateway.SelectAll();
-            //IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();
-           
+            //IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();   
 
             return View();
         }
+
         public ActionResult DrawDengueHistoryChart()
         {
             IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();
@@ -97,87 +94,17 @@ namespace Dengue.Controllers
             return base.File(Server.MapPath("~/Content/DengueClusterRegionChart"), "jpeg");
         }
 
-    /*          // GET: DengueClusters
-                public ActionResult Case(string search, string sortCases)
-                {
-                    ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
-                    // ViewData["noDengueCase"] = denguecases;
-
-                    dengueClusterAll = DengueClustergateway.SelectAll();
-                    if (!string.IsNullOrWhiteSpace(search))
-                    {
-                        search = search.ToUpper();
-                        dengueClusterAll = dengueClusterAll.Where(d => d.Description.ToUpper().Contains(search));
-                    }
-                    else
-                    {
-                        ViewBag.PriceSortParm = String.IsNullOrEmpty(sortCases) ? "case_desc" : "";
-                        switch (sortCases)
-                        {
-
-                            case "case_desc":
-                                dengueClusterAll = DengueClustergateway.Order("case_desc", dengueClusterAll);
-                                break;
-                            default:
-                                dengueClusterAll = DengueClustergateway.Order("default", dengueClusterAll);
-
-                                break;
-                        }
-                    }
-
-                    setWeatherDropdown();
-
-                    return View(dengueClusterAll);
-                }
-
-              // GET: BreedingHabitat
-                public ActionResult bHCase(string search, string sortCases)
-                {
-                    ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
-
-
-                    IEnumerable<BreedingHabitat> bH = BHgateway.SelectAll();
-
-                    if (!string.IsNullOrWhiteSpace(search))
-                    {
-                        search = search.ToUpper();
-                        bH = bH.Where(d => d.Location.ToUpper().Contains(search));
-                    }
-                    else
-                    {
-                        ViewBag.PriceSortParm = String.IsNullOrEmpty(sortCases) ? "case_desc" : "";
-                        switch (sortCases)
-                        {
-
-                            case "case_desc":
-                                bH = BHgateway.Order("case_desc", bH);
-                                break;
-                            default:
-                                bH = BHgateway.Order("default", bH);
-
-                                break;
-                        }
-                    }
-
-                    setWeatherDropdown();
-
-                    return View(bH);
-                }**/
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
         public ActionResult ContactUs()
         {
             ViewBag.contactedUs = "false";
-            setWeatherDropdown();
 
             ViewBag.Message = "Your contact page.";
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
+            return View();
+        }
+
+        public ActionResult GenerateStatistics() {
+
             return View();
         }
 
@@ -185,7 +112,6 @@ namespace Dengue.Controllers
         public ActionResult ContactUs(string name, string contactNo, string email, string description)
         {
             ViewBag.contactedUs = "true";
-            setWeatherDropdown();
             using (MailMessage mail = new MailMessage())
             {
                 mail.From = new MailAddress(email);
@@ -244,7 +170,8 @@ namespace Dengue.Controllers
                     passedWeatherInfo = weather.Split(';');
                     if (w.Zone == passedWeatherInfo[1]) {
                         noOfLocationInZone++;
-                        ViewBag.noOfLocationInZone = noOfLocationInZone;
+                        rM.noOfLocationInZone = noOfLocationInZone;
+                       // ViewBag.noOfLocationInZone = noOfLocationInZone;
                     }
                 }
             }
@@ -252,7 +179,8 @@ namespace Dengue.Controllers
 
             if (weather == null)
             {
-                ViewBag.selectedEvaluateArea = false;
+                rM.selectedEvaluateArea = false;
+               // ViewBag.selectedEvaluateArea = false;
             }
             else
             {
@@ -284,37 +212,52 @@ namespace Dengue.Controllers
 
                 if (totalScore >= 8)
                 {
-                    ViewBag.riskLevel = "HIGH";
+                    rM.risklevel = "HIGH";
+                  //  ViewBag.riskLevel = "HIGH";
                 }
                 else if (totalScore > 4)
                 {
-                    ViewBag.riskLevel = "MEDIUM";
+                    rM.risklevel = "MEDIUM";
+                   // ViewBag.riskLevel = "MEDIUM";
                 }
                 else if (totalScore <= 4) {
-                    ViewBag.riskLevel = "LOW";
+                    rM.risklevel = "LOW";
+                  //  ViewBag.riskLevel = "LOW";
                 }
 
                 //For info in whole singapore
-                ViewBag.dengueClusterCases = sgDC;
-                ViewBag.breedingCases = sgBH;
+                rM.dengueClusterCases = sgDC;
+                rM.breedingCases = sgBH;
+                //ViewBag.dengueClusterCases = sgDC;
+                //ViewBag.breedingCases = sgBH;
+
                 //for info in region
-                ViewBag.breedingRegion = regionBH;
-                ViewBag.dengueRegion = regionDC;
+                rM.breedingRegion = regionBH;
+                rM.dengueRegion = regionDC;
+                // ViewBag.breedingRegion = regionBH;
+                // ViewBag.dengueRegion = regionDC;
+
                 //for info in area
-                ViewBag.dengueLocation = locationDC;
-                ViewBag.breedingLocation = locationBH;
+                rM.dengueLocation = locationDC;
+                rM.breedingLocation = locationBH;
+               // ViewBag.dengueLocation = locationDC;
+              //  ViewBag.breedingLocation = locationBH;
 
                 //set street name
-                ViewBag.street = passedWeatherInfo[0];
+                rM.street = passedWeatherInfo[0];
+               // ViewBag.street = passedWeatherInfo[0];
                 //set region name and region number
                 convertShortToLongZone(passedWeatherInfo[1]);
 
                 //to check if a value is chosen
-                ViewBag.selectedEvaluateArea = true;
+                rM.selectedEvaluateArea = true;
+                rM.areaWeather = passedWeatherInfo[2];
+               // ViewBag.selectedEvaluateArea = true;
+               // ViewBag.areaWeather = passedWeatherInfo[2];
             }
             System.Diagnostics.Debug.WriteLine(weather);
 
-            return View();
+            return View(rM);
         }
 
         public int computeWeatherScore(string weatherAbb) {
@@ -385,28 +328,38 @@ namespace Dengue.Controllers
 
             if (zone == "C")
             {
-                ViewBag.region = "Central";
-                ViewBag.regionNumber = 4;
+                rM.region = "Central";
+                rM.regionNumber = 4;
+               // ViewBag.region = "Central";
+              //  ViewBag.regionNumber = 4;
             }
             else if (zone == "N")
             {
-                ViewBag.region = "North";
-                ViewBag.regionNumber = 0;
+                rM.region = "North";
+                rM.regionNumber = 0;
+                //ViewBag.region = "North";
+                //ViewBag.regionNumber = 0;
             }
             else if (zone == "S")
             {
-                ViewBag.region = "South";
-                ViewBag.regionNumber = 1;
+                rM.region = "South";
+                rM.regionNumber = 1;
+                //ViewBag.region = "South";
+                //ViewBag.regionNumber = 1;
             }
             else if (zone == "E")
             {
-                ViewBag.region = "East";
-                ViewBag.regionNumber = 2;
+                rM.region = "East";
+                rM.regionNumber = 2;
+                //ViewBag.region = "East";
+                //ViewBag.regionNumber = 2;
             }
             else if (zone == "W")
             {
-                ViewBag.region = "West";
-                ViewBag.regionNumber = 3;
+                rM.region = "West";
+                rM.regionNumber = 3;
+                //ViewBag.region = "West";
+                //ViewBag.regionNumber = 3;
             }
 
             return;
@@ -444,7 +397,7 @@ namespace Dengue.Controllers
         {
             string zone = convertLongToShortZone(chartRegion);
 
-            string[] x = new string[2] { street, "Other Areas in "+zone };
+            string[] x = new string[2] { "Other Areas in " + zone, street  };
             int[] y;
 
             Chart chart = new Chart();
@@ -610,5 +563,40 @@ namespace Dengue.Controllers
             return;
         }
 
+        public ActionResult WeatherPartial() {
+            ViewBag.DayForecast = weatherForecast();
+            return PartialView();
+        }
+        public ActionResult WeekCasesPartial()
+        {
+            ViewBag.WeekCases = DengueCHgateway.getWeekNoCases();
+            return PartialView();
+        }
+        public ActionResult TotalCasesPartial()
+        {
+            ViewBag.TotalCases = DengueCHgateway.getTotalNoCases();
+            return PartialView();
+        }
+        public ActionResult EvaluateDropdown()
+        {
+            setWeatherDropdown();
+            return PartialView();
+        }
+        public string weatherForecast()
+        {
+
+
+
+            String url = "http://www.nea.gov.sg/api/WebAPI/?dataset=24hrs_forecast&keyref=781CF461BB6606AD4AF8F309C0CCE9941C98AB71D91D487D";
+            HttpWebRequest urlRequest = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebResponse urlResponse = (HttpWebResponse)urlRequest.GetResponse();
+            Stream urlReceiveStream = urlResponse.GetResponseStream();
+            StreamReader urlReadStream = new StreamReader(urlReceiveStream, Encoding.UTF8);
+            XDocument urlXDoc = XDocument.Load(urlReadStream);
+
+            return (string)urlXDoc.XPathSelectElement("/channel/main/forecast");
+
+
+        }
     }
 }

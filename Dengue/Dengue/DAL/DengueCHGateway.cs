@@ -49,5 +49,26 @@ namespace Dengue.DAL
                 db.SaveChanges();
             }
         }
+        public int getTotalNoCases()
+        {
+            int denguecases = 0;
+            IEnumerable<DengueCaseHistory> numbercases = DengueCHgateway.SelectAll();
+            foreach (DengueCaseHistory dc in numbercases)
+            {
+                denguecases += dc.No_of_Cases;
+            }
+            return denguecases;
+        }
+
+        public int getWeekNoCases()
+        {
+            int denguecases = 0;
+            IEnumerable<DengueCaseHistory> numbercases = DengueCHgateway.SelectAll();
+
+
+            denguecases = numbercases.Last().No_of_Cases;
+
+            return denguecases;
+        }
     }
 }

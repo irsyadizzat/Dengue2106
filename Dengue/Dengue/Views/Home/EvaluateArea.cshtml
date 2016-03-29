@@ -1,185 +1,122 @@
-﻿@model IEnumerable<Dengue.Models.DengueCluster>
+﻿@model Dengue.Models.ResultModel
 @{
     ViewBag.Title = "Evaluate Area";
 }
 
-<h2>Evaluate Area</h2>
-
-<!-- RIGHT SIDE-->
-<div class="row" style=" height:100%; min-height:500px;">
-    <!--MAIN-->
-    <div class="col-md-9" style="height:700px; padding-right:0px;">
-        <div style="border-radius:8px; border: 1px solid #a09e9e;">
-            <div class="main-header"><h2 style="font-size: 22px; color:#66757f; margin:20px 0px 0px 15px;">Result</h2><hr /></div>
-            <!--CONTENT GOES HERE-->
-            <div style="margin:0px 15px 10px 15px;">
-                @if (ViewBag.selectedEvaluateArea == false)
-                {
-                    <p>You never select anything</p>
-                }
-                else
-                {
-                    <!--top container for risk level-->
-                    <div style="border-style:solid; height:120px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:1px;">
-                        <div style="background-color: rgb(245,248,250); height:50px; text-align:center; padding-top:16px; color: #282020;">
-                            Based on our calculation.. <u>@ViewBag.street</u> is currently at:
-                        </div>
-                        <div style="color: #2a6496; font-size:20px; text-align:center; padding-top:10px;">
-                            <u><span style="font-size:35px; color:red;">@ViewBag.riskLevel</span></u> risk level
-                        </div>
-                    </div>
-                    <!--middle container for statistics-->
-                    <div style="border-style:solid; height:508px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:1px;">
-                        <div style="background-color: rgb(245,248,250); height:50px; text-align:center; padding-top:8px; color: #282020;">
-                            Here are some statistics about <u>@ViewBag.street</u>:
-                            <p style="font-size: 11px; color: #8899a6;">Based on the entire Singapore's Dengue condition...</p>
-                        </div>
-                        <div padding-top:10px;">
-                            <!--STATISTICS-->
-                            <div style="width:50%; float:left; ">
-                                <div style="border-radius:8px; border: 1px solid #a09e9e;">
-                                    <div style="margin-left:0px;">
-                                        <div>
-                                            <h3 style="margin:15px 0px 1px 0px; text-align:center; font-family: 'Bariol Regular', sans-serif; color: #58595b;">In Singapore,</h3>
-                                            <hr style="margin:10px 0px 10px 0px;" />
-                                        </div>
-                                        <div style="margin-left:10%;">
-                                            <p style="font-size: 13px; color: #8899a6;">there are: </p>
-                                            <p>@ViewBag.dengueClusterCases Dengue Cluster</p>
-                                            <p>@ViewBag.breedingCases Breeding Habitats</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="border-radius:8px; border: 1px solid #a09e9e;">
-                                    <div style="margin-left:0px;">
-                                        <div>
-                                            <h3 style="margin:15px 0px 1px 0px; text-align:center; font-family: 'Bariol Regular', sans-serif; color: #58595b;">In the <u>@ViewBag.region</u> Region,</h3>
-                                            <hr style="margin:10px 0px 10px 0px;" />
-                                        </div>
-                                        <div style="margin-left:10%;">
-                                            <p style="font-size: 13px; color: #8899a6;">there are: </p>
-                                            <p>@ViewBag.dengueRegion Dengue Cluster</p>
-                                            <p>@ViewBag.breedingRegion Dengue Breeding Habitats</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="border-radius:8px; border: 1px solid #a09e9e;">
-                                    <div style="margin-left:0px;">
-                                        <div>
-                                            <h3 style="margin:15px 0px 1px 0px; text-align:center; font-family: 'Bariol Regular', sans-serif; color: #58595b;">In <u>@ViewBag.street</u>,</h3>
-                                            <hr style="margin:10px 0px 10px 0px;" />
-                                        </div>
-                                        <div style="margin-left:10%;">
-                                            <p style="font-size: 13px; color: #8899a6;">there are: </p>
-                                            <p>@ViewBag.dengueLocation Dengue Cluster</p>
-                                            <p>@ViewBag.breedingLocation Breeding Habitats</p>
-                                        </div>
-                                    </div>
-                                </div>
+<!--CONTENT GOES HERE-->
+<div style="margin:0px 15px 10px 15px;">
+    @if (Model.selectedEvaluateArea == false)
+    {
+        <p>You never select anything</p>
+    }
+    else
+    {
+        <!--top container for risk level-->
+        <div style="border-style:solid; height:120px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:1px;">
+            <div style="background-color: rgb(245,248,250); height:50px; text-align:center; padding-top:16px; color: #282020;">
+                Based on our calculation.. <u>@Model.street</u> is currently at:
+            </div>
+            <div style="color: #2a6496; font-size:20px; text-align:center; padding-top:10px;">
+                <u><span style="font-size:35px; color:red;">@Model.risklevel</span></u> risk level
+            </div>
+        </div>
+        <!--middle container for statistics-->
+        <div style="border-style:solid; height:565px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:1px;">
+            <div style="background-color: rgb(245,248,250); height:50px; text-align:center; padding-top:8px; color: #282020;">
+                Here are some statistics about <u>@Model.street</u>:
+                <p style="font-size: 11px; color: #8899a6;">Based on the entire Singapore's Dengue condition...</p>
+            </div>
+            <div padding-top:10px;">
+                <!--STATISTICS-->
+                <div style="width:50%; float:left; ">
+                    <div style="border-radius:8px; border: 1px solid #a09e9e;">
+                        <div style="margin-left:0px;">
+                            <div>
+                                <h3 style="margin:15px 0px 1px 0px; text-align:center; font-family: 'Bariol Regular', sans-serif; color: #58595b;">In Singapore,</h3>
+                                <hr style="margin:10px 0px 10px 0px;" />
                             </div>
-                            <!--GRAPHS-->
-                            <div style="width:50%; float:right; border-radius:8px; border: 1px solid #a09e9e;">
-                                <div>
-                                    <div id="dengueCarousel" class="carousel slide" data-ride="carousel">
-                                        <!-- Indicators -->
-                                        <ol class="carousel-indicators">
-                                            <li data-target="#dengueCarousel" data-slide-to="0" class="active"></li>
-                                            <li data-target="#dengueCarousel" data-slide-to="1"></li>
-                                            <li data-target="#dengueCarousel" data-slide-to="2"></li>
-                                            <li data-target="#dengueCarousel" data-slide-to="3"></li>
-                                        </ol>
-
-                                        <!-- Wrapper for slides -->
-                                        <div class="carousel-inner" role="listbox">
-                                            <div class="item active" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawRegionChart", "Home", new { chartRegion = @ViewBag.regionNumber, noOfLocationInZone = ViewBag.noOfLocationInZone, street = @ViewBag.street, type = "DengueCluster" })" />
-                                            </div>
-
-                                            <div class="item" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawRegionChart", "Home", new { chartRegion = @ViewBag.regionNumber, noOfLocationInZone = ViewBag.noOfLocationInZone, street = @ViewBag.street, type = "BreedingHabitat" })" />
-                                            </div>
-
-                                            <div class="item" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = @ViewBag.regionNumber , type = "DengueCluster"})" />
-                                            </div>
-
-                                            <div class="item" style="margin-left:20px;">
-                                                <img src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = @ViewBag.regionNumber , type = "BreedingHabitat"})" />
-                                            </div>
-                                        </div>
-
-                                        <!-- Left and right controls -->
-                                        <a class="left carousel-control" style="background-image:-webkit-gradient(linear, 0 top, 100% top, from(rgba(0, 0, 0, 0.2)), to(rgba(0, 0, 0, 0.0001)));" href="#dengueCarousel" role="button" data-slide="prev">
-                                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-                                            <span class="sr-only">Previous</span>
-                                        </a>
-                                        <a class="right carousel-control" style="    background-image: -webkit-gradient(linear, 0 top, 100% top, from(rgba(0, 0, 0, 0.0001)), to(rgba(0, 0, 0, 0.2)));" href="#dengueCarousel" role="button" data-slide="next">
-                                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-                                            <span class="sr-only">Next</span>
-                                        </a>
-                                    </div>
-                                </div>
+                            <div style="margin-left:10%;">
+                                <p style="font-size: 13px; color: #8899a6;">there are: </p>
+                                <p>@Model.dengueClusterCases Dengue Cluster</p>
+                                <p>@Model.breedingCases Breeding Habitats</p>
                             </div>
                         </div>
                     </div>
+                    <div style="border-radius:8px; border: 1px solid #a09e9e;">
+                        <div style="margin-left:0px;">
+                            <div>
+                                <h3 style="margin:15px 0px 1px 0px; text-align:center; font-family: 'Bariol Regular', sans-serif; color: #58595b;">In the <u>@Model.region</u> Region,</h3>
+                                <hr style="margin:10px 0px 10px 0px;" />
+                            </div>
+                            <div style="margin-left:10%;">
+                                <p style="font-size: 13px; color: #8899a6;">there are: </p>
+                                <p>@Model.dengueRegion Dengue Cluster</p>
+                                <p>@Model.breedingRegion Dengue Breeding Habitats</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="border-radius:8px; border: 1px solid #a09e9e;">
+                        <div style="margin-left:0px;">
+                            <div>
+                                <h3 style="margin:15px 0px 1px 0px; text-align:center; font-family: 'Bariol Regular', sans-serif; color: #58595b;">In <u>@Model.street</u>,</h3>
+                                <hr style="margin:10px 0px 10px 0px;" />
+                            </div>
+                            <div style="margin-left:10%;">
+                                <p style="font-size: 13px; color: #8899a6;">there are: </p>
+                                <p>@Model.dengueLocation Dengue Cluster</p>
+                                <p>@Model.breedingLocation Breeding Habitats</p>
+                                <p style="font-size: 13px; color: #8899a6;">also, the weather forecast is: </p>
+                                <p>@Model.areaWeather</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--GRAPHS-->
+                <div style="width:50%; height:514px; float:right; border-radius:8px; border: 1px solid #a09e9e;">
+                    <div id="dengueCarousel" class="carousel slide" data-ride="carousel" style="height:514px; ">
+                        <!-- Indicators -->
+                        <ol class="carousel-indicators">
+                            <li data-target="#dengueCarousel" data-slide-to="0" class="active"></li>
+                            <li data-target="#dengueCarousel" data-slide-to="1"></li>
+                            <li data-target="#dengueCarousel" data-slide-to="2"></li>
+                            <li data-target="#dengueCarousel" data-slide-to="3"></li>
+                        </ol>
+
+                        <!-- Wrapper for slides -->
+                        <div class="carousel-inner" role="listbox">
+                            <div class="item active" style="margin-left:20px;">
+                                <img src="@Url.Action("DrawRegionChart", "Home", new { chartRegion = @Model.regionNumber, noOfLocationInZone = Model.noOfLocationInZone, street = @Model.street, type = "DengueCluster" })" />
+                            </div>
+
+                            <div class="item" style="margin-left:20px;">
+                                <img src="@Url.Action("DrawRegionChart", "Home", new { chartRegion = @Model.regionNumber, noOfLocationInZone = Model.noOfLocationInZone, street = @Model.street, type = "BreedingHabitat" })" />
+                            </div>
+
+                            <div class="item" style="margin-left:20px;">
+                                <img src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = @Model.regionNumber , type = "DengueCluster"})" />
+                            </div>
+
+                            <div class="item" style="margin-left:20px;">
+                                <img src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = @Model.regionNumber , type = "BreedingHabitat"})" />
+                            </div>
+                        </div>
+
+                        <!-- Left and right controls -->
+                        <a class="left carousel-control" style="background-image:-webkit-gradient(linear, 0 top, 100% top, from(rgba(0, 0, 0, 0.2)), to(rgba(0, 0, 0, 0.0001)));" href="#dengueCarousel" role="button" data-slide="prev">
+                            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="right carousel-control" style="    background-image: -webkit-gradient(linear, 0 top, 100% top, from(rgba(0, 0, 0, 0.0001)), to(rgba(0, 0, 0, 0.2)));" href="#dengueCarousel" role="button" data-slide="next">
+                            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
                     
-                }
-            </div>
-        </div>
-    </div>
-
-
-    <!-- RIGHT SIDE-->
-    <div class="col-md-3" style="height:100%; padding-left:7px;">
-        <div style="height:330px;">
-            <div style="border-style:solid; height:165px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:1px;">
-                <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:16px; color: #282020;">
-                    Cases reported this week as of 16/02/2016:
-                </div>
-                <div style="color: #2a6496; font-size:35px; text-align:center; padding-top:20px;">
-                    50
-                </div>
-            </div>
-            <div style="border-style:solid; height:165px; border-radius:8px; border: 1px solid #a09e9e; ">
-                <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:16px; color: #282020;">
-                    Cases reported this year as of 01/01/2016:
-                </div>
-                <div style="color: #2a6496; font-size:35px; text-align:center; padding-top:20px;">
-                    @ViewData["noDengueCase"]
-                </div>
-            </div>
-            <div style="border-radius:8px;  height:100%;">
-                <div style="height: 125px; margin-bottom:1px; border: 1px solid #a09e9e; border-radius:8px;">
-                    <div style="background-color: rgb(245,248,250); height:35px; text-align:center; padding-top:8px; color: #282020;">
-                        Report Case
-                    </div>
-                    <div id="toStyleDiv" style="height:150px; text-align:center; padding-top:10px; ">
-                        <span>See a potential dengue habitat?</span>
-                        <br />
-                        <button style="margin-top:8px;width:150px;" class="btn btn-danger"><span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> @Html.ActionLink("Contact Us", "ContactUs")</button>
-                    </div>
-                </div>
-                <div style="border: 1px solid #a09e9e; border-radius:8px; height:185px;">
-                    <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:8px; color: #282020;">
-                        Evaluate Area
-                        <p style="margin-top:5px;font-size: 11px; color: #8899a6;">Curious about the dengue condition in your area?<br> Let us check for you.</p>
-                    </div>
-                    <div>
-                        @using (Html.BeginForm("EvaluateArea", "Home"))
-                        {
-                            <div class="form-group" style="margin:8px 0px 15px 25px; width:80%; text-align:center;">
-                                <label for="exampleInputEmail1">Input your current area</label>
-                                @Html.DropDownList("Weather", ViewBag.myList as SelectList)
-                                <button style="margin-top:5px; width:150px;" type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Evaluate</button>
-                            </div>
-                        }
-                    </div>
-                </div>
-                <div style="height:120px; margin-top:1px;">
-                    <a href="https://www.facebook.com/Stop.Dengue.Now" target="_blank"><img style="margin-left:1px; margin-top:0.5px; height:99%; width:100%;" src="~/Content/Images/fb_dengue.jpg" /></a>
-                </div>
-            </div>
-
-        </div>
-    </div>
+    }
 </div>
+
+
+    

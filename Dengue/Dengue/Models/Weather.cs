@@ -13,7 +13,6 @@ namespace Dengue.Models
         [Key]
         public int Weather_Id { get; set; }
 
-
         public String Issue_Date { get; set; }
 
         public string Forecast { get; set; }

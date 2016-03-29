@@ -41,15 +41,15 @@
                 <img src="~/Content/Images/wipeout_logo.jpg" style="height:100px; margin:0px 0px 7px 0px;" />
                 <img src="~/Content/Images/logo.jpg" style="height:100px; margin:0px 0px 7px 0px;" />
             </div>
-            <nav class="navbar navbar-default" style="margin:0px 15px 10px 15px;">
+            <nav class="navbar navbar-default" style="margin:0px 0px 10px 15px; width:74%; float:left;">
                 <div class="container-fluid">
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
                             <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                            <li>@Html.ActionLink("View Dengue Cluster", "Index", "DengueCLusters")</li>
+                            <li>@Html.ActionLink("View Dengue Cluster", "Index", "DengueClusters")</li>
                             <li>@Html.ActionLink("View Breeding Habitat", "Index", "BreedingHabitats")</li>
-                            <li>@Html.ActionLink("View Dengue Statistics", "Case", "Home")</li>
+                            <li>@Html.ActionLink("View Dengue Statistics", "GenerateStatistics", "Home")</li>
                             <li>@Html.ActionLink("Contact Us", "ContactUs", "Home")</li>
                             @*<li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
@@ -63,8 +63,91 @@
                     </div><!-- /.navbar-collapse -->
                 </div><!-- /.container-fluid -->
             </nav>
+            <div style="border-style:solid; height:53px; width:270px; border-radius:8px; border: 1px solid #a09e9e; float:right; margin-right:15px;">
+
+                <div style="background-color: rgb(245,248,250); height:26px; text-align:center; padding-top:3px; color: #282020;">
+                    24-Hours Weather Forecast:
+                </div>
+                <div style="text-align:center; padding-top:2px;">
+                    @Html.Action("WeatherPartial", "Home")
+                </div>
+            </div>
+
+
+            
         </div>
-        @RenderBody()
+
+        <div class="row" style=" height:100%; min-height:500px;">
+            <!-- LEFT SIDE-->
+            <div class="col-md-9" style="height:770px; padding-right:0px;">
+                @if (ViewBag.Title != "Home")
+                {
+                    <div style="border-radius:8px; border: 1px solid #a09e9e; height:101%;">
+                        <div class="main-header"><h2 style="font-size: 22px; color:#66757f; margin:20px 0px 0px 15px;">@ViewBag.Title</h2><hr /></div>
+                        @RenderBody()
+                    </div>
+                }
+                else
+                {
+                    @RenderBody()
+                }
+            </div>
+            <!-- RIGHT SIDE-->
+            <div class="col-md-3" style="height:100%; padding-left:7px;">
+                <div style="height:330px;">
+                    <div style="border-style:solid; height:165px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:2px;">
+                        <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:16px; color: #282020;">
+                            Cases reported this week as of 16/02/2016:
+                        </div>
+                        <div style="color: #2a6496; font-size:35px; text-align:center; padding-top:20px;">
+                            @Html.Action("WeekCasesPartial", "Home")
+                        </div>
+                    </div>
+                    <div style="border-style:solid; height:165px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:2px;">
+                        <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:16px; color: #282020;">
+                            Cases reported this year as of 01/01/2016:
+                        </div>
+                        <div style="color: #2a6496; font-size:35px; text-align:center; padding-top:20px;">
+                            @Html.Action("TotalCasesPartial", "Home")
+                        </div>
+                    </div>
+                    <div style="border-radius:8px;  height:100%;">
+                        <div style="height: 125px; margin-bottom:1px; border: 1px solid #a09e9e; border-radius:8px;">
+                            <div style="background-color: rgb(245,248,250); height:35px; text-align:center; padding-top:8px; color: #282020;">
+                                Report Case
+                            </div>
+                            <div id="toStyleDiv" style="height:150px; text-align:center; padding-top:10px; ">
+                                <span>See a potential dengue habitat?</span>
+                                <br />
+                                <button style="margin-top:8px;width:150px;" class="btn btn-danger"><span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> @Html.ActionLink("Contact Us", "ContactUs","Home")</button>
+                            </div>
+                        </div>
+                        <div style="border: 1px solid #a09e9e; border-radius:8px; height:185px;">
+                            <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:8px; color: #282020;">
+                                Evaluate Area
+                                <p style="margin-top:5px;font-size: 11px; color: #8899a6;">Curious about the dengue condition in your area?<br> Let us check for you.</p>
+                            </div>
+                            <div>
+                                @using (Html.BeginForm("EvaluateArea", "Home"))
+                                {
+                                    <div class="form-group" style="margin:8px 0px 15px 25px; width:80%; text-align:center;">
+                                        <label for="exampleInputEmail1">Input your current area</label>
+                                        @Html.Action("EvaluateDropdown", "Home")
+                                        <button style="margin-top:5px; width:150px;" type="submit" class="btn btn-success"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Evaluate</button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        <div style="height:120px; margin-top:1px;">
+                            <a href="https://www.facebook.com/Stop.Dengue.Now" target="_blank"><img style="margin-left:1px; margin-top:0.5px; height:99%; width:100%;" src="~/Content/Images/fb_dengue.jpg" /></a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        
         <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - Dengue Portal</p>
