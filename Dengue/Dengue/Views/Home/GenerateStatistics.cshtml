@@ -1,7 +1,81 @@
-﻿
+﻿@model Dengue.Models.StatisticsModel
 @{
     ViewBag.Title = "Generate Statistics";
 }
 
+<div style="margin:0px 20px 10px 20px; height:665px;">
+    @if (Model == null)
+    {
+        <p style="font-size: 12px; color: #8899a6;">Wish to see some statistics? Select the type of data below and click Submit!</p>
 
-
+        using (Html.BeginForm())
+        {
+            <div class="form-group">
+                <label for="exampleInputEmail1">Data Topic</label><br />
+                @Html.DropDownList("DataTopic", (IEnumerable<SelectListItem>)ViewBag.topicList)
+            </div>
+            <button style="width:80px;" class="btn btn-primary" type="submit">Submit</button>
+        }
+    }
+    else
+    {
+        <div style="border-style:solid; height:325px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:1px;">
+            <div style="background-color: rgb(245,248,250); height:50px; text-align:center; padding-top:8px; color: #282020;">
+                Here are some statistics about <u>@Model.topic</u>:
+                <p style="font-size: 11px; color: #8899a6;">Based on the entire Singapore's Dengue condition...</p>
+            </div>
+            <div padding-top:10px;">
+                <!--STATISTICS-->
+                <div style="width:50%; height:275px; float:left; border-radius:8px; border: 1px solid #a09e9e;">
+                    
+                        <div style="margin-left:0px;">
+                            <div>
+                                <h3 style="margin:15px 0px 1px 0px; text-align:center; font-family: 'Bariol Regular', sans-serif; color: #58595b;">For <u>@Model.topic</u>,</h3>
+                                <hr style="margin:10px 0px 10px 0px;" />
+                            </div>
+                            <div style="margin-left:10%;">
+                                <p style="font-size: 13px; color: #8899a6;">there are: </p>
+                                
+                                @if (Model.topic == "Dengue History")
+                                {
+                                    <p>@Model.total cases</p>
+                                    <p>in @Model.count weeks</p>
+                                }
+                                else if (Model.topic == "Dengue Clusters")
+                                {
+                                    <p>@Model.total cases</p>
+                                    <p>in @Model.count clusters</p>
+                                }
+                                else
+                                {
+                                    <p>@Model.total cases</p>
+                                    <p>in @Model.count breeding habitat</p>
+                                }
+                                <p style="font-size: 13px; color: #8899a6;">some analysis: </p>
+                                <p>Mean: @Model.mean</p>
+                                <p>Variance: @Model.variance</p>
+                                <p>Standard Deviation: @Model.sd</p>
+                            </div>
+                        </div>
+                   
+                </div>
+                <!--GRAPHS-->
+                <div style="width:50%; height:275px; float:right; border-radius:8px; border: 1px solid #a09e9e;">
+                    @if (Model.topic == "Dengue History")
+                    {
+                        <img style="margin:10px 0px 0px 21px;" src="@Url.Action("DrawLineChart", "Home", new { height = 255})" />
+                    }
+                    else if (Model.topic == "Dengue Clusters")
+                    {
+                        <img style="margin:10px 0px 0px 21px;" src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = 99 , type = "DengueCluster", height = 255})" />
+                    }
+                    else
+                    {
+                        <img style="margin:10px 0px 0px 21px;" src="@Url.Action("DrawOverallChart", "Home", new { chartRegion = 99 , type = "BreedingHabitat", height = 255})" />
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+    

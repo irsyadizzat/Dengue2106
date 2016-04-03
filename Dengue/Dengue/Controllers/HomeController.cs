@@ -25,6 +25,7 @@ namespace Dengue.Controllers
         private DengueCHGateway DengueCHgateway = new DengueCHGateway();
         private BHGateway BHgateway = new BHGateway();
 
+
         // GET: DengueClusters
         public ActionResult Index()
         {
@@ -51,7 +52,7 @@ namespace Dengue.Controllers
 
             foreach (DengueCaseHistory DCH in dengueHistory)
             {
-                x[k] = DCH.Epi_Week.ToString();
+                x[k] = "W" + DCH.Epi_Week.ToString();
                 y[k] = DCH.No_of_Cases;
                 k++;
             }
@@ -67,7 +68,7 @@ namespace Dengue.Controllers
 
             ChartArea ca = new ChartArea();
             ca.AxisX.Title = "Week";
-            ca.AxisY.Title = "Number of Cases";
+            ca.AxisY.Title = "No. of Dengue Cases";
             chart.ChartAreas.Add(ca);
 
             Series dataS = new Series("Data");
@@ -105,7 +106,121 @@ namespace Dengue.Controllers
 
         public ActionResult GenerateStatistics() {
 
+            List<SelectListItem> topicList = new List<SelectListItem>();
+            topicList.Add(new SelectListItem() { Text = "Dengue History", Value = "Dengue History"});
+            topicList.Add(new SelectListItem() { Text = "Dengue Clusters", Value = "Dengue Clusters" });
+            topicList.Add(new SelectListItem() { Text = "Breeding Habitat", Value = "Breeding Habitat" });
+            ViewBag.DataTopic = topicList;
+
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult GenerateStatistics(string DataTopic)
+        {           
+
+            double mean = 0, variance = 0, sd = 0;
+            double count = 0;
+            double total = 0;
+            StatisticsModel sM = new StatisticsModel();
+            List<double> data = new List<double> {};
+
+            if (DataTopic == "Dengue History")
+            {
+                IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();
+                count = dengueHistory.Count();
+                foreach (DengueCaseHistory DCH in dengueHistory)
+                {
+                    total += DCH.No_of_Cases;
+                    data.Add(DCH.No_of_Cases);
+                }
+
+                mean = Math.Round(data.Mean(),2);
+                variance = Math.Round(data.Variance(),2);
+                sd = Math.Round(data.StandardDeviation(),2);
+            }
+            else if (DataTopic == "Dengue Clusters")
+            {
+                IEnumerable<DengueCluster> dengueCluster = DengueClustergateway.SelectAll();
+                count = dengueCluster.Count();
+
+                foreach (DengueCluster DC in dengueCluster)
+                {
+                    total += DC.No_of_Cases;
+                    data.Add(DC.No_of_Cases);
+                }
+
+                mean = Math.Round(data.Mean(), 2);
+                variance = Math.Round(data.Variance(), 2);
+                sd = Math.Round(data.StandardDeviation(), 2);
+            }
+            else
+            {
+                IEnumerable<BreedingHabitat> breedingHabitat = BHgateway.SelectAll();
+                count = breedingHabitat.Count();
+
+                foreach (BreedingHabitat bh in breedingHabitat)
+                {
+                    total += bh.No_of_Cases;
+                    data.Add(bh.No_of_Cases);
+                }
+
+                mean = Math.Round(data.Mean(), 2);
+                variance = Math.Round(data.Variance(), 2);
+                sd = Math.Round(data.StandardDeviation(), 2);
+            }
+
+            sM.topic = DataTopic;
+            sM.total = total;
+            sM.count = count;
+            sM.mean = mean;
+            sM.variance = variance;
+            sM.sd = sd;
+
+            return View(sM);
+        }
+
+        public ActionResult DrawLineChart(int height)
+        {
+            IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();
+            int count = dengueHistory.Count();
+            int k = 0;
+            string[] x = new string[count];
+
+            int[] y = new int[count];
+
+            foreach (DengueCaseHistory DCH in dengueHistory)
+            {
+                x[k] = "W"+DCH.Epi_Week.ToString();
+                y[k] = DCH.No_of_Cases;
+                k++;
+            }
+
+            Chart chart = new Chart();
+            chart.Width = 360;
+            chart.Height = height;
+            chart.Titles.Add("Dengue Case History (as of 01/01/2016)");
+
+            ChartArea ca = new ChartArea();
+            ca.AxisX.Title = "Week";
+            ca.AxisY.Title = "No. of Dengue Cases";
+            chart.ChartAreas.Add(ca);
+
+            Series dataS = new Series("Data");
+
+            dataS.ChartType = SeriesChartType.Line;
+
+            for (int i = 0; i < x.Length; i++)
+            {
+                dataS.Points.AddXY(x[i], y[i]);
+                dataS.Label = "#VALY";
+            }
+
+            chart.Series.Add(dataS);
+            chart.Series["Data"].IsValueShownAsLabel = true;
+
+            chart.SaveImage(Server.MapPath("~/Content/LineChart"), ChartImageFormat.Jpeg);
+            return base.File(Server.MapPath("~/Content/LineChart"), "jpeg");
         }
 
         [HttpPost]
@@ -433,6 +548,7 @@ namespace Dengue.Controllers
                 t.Text = "Breeding Habitat Chart (In Region)";
             }            
 
+
             chart.Titles.Add(t);
 
             ChartArea ca = new ChartArea();
@@ -450,6 +566,7 @@ namespace Dengue.Controllers
                 dataS.Label = "#VALX\n   #VALY";
             }
 
+
             chart.Series.Add(dataS);
             chart.Series["Data"].Points[0]["Exploded"] = "True";
 
@@ -462,14 +579,16 @@ namespace Dengue.Controllers
             return base.File(Server.MapPath("~/Content/" + type + "Chart"), "jpeg");
         }
 
-        public ActionResult DrawOverallChart(int chartRegion, string type)
+
+
+        public ActionResult DrawOverallChart(int chartRegion, string type, int height)
         {
             string[] x = new string[5] { "North", "South", "East", "West", "Central" };
             int[] y;
 
             Chart chart = new Chart();
             chart.Width = 360;
-            chart.Height = 455;
+            chart.Height = height;
 
             Title t = new Title();
 
@@ -507,6 +626,7 @@ namespace Dengue.Controllers
             dataS["PieLabelStyle"] = "Outside";
             dataS["PieLineColor"] = "Black";
 
+
             for (int i = 0; i < x.Length; i++)
             {
                 dataS.Points.AddXY(x[i], y[i]);
@@ -514,7 +634,10 @@ namespace Dengue.Controllers
             }
 
             chart.Series.Add(dataS);
-            chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
+            if (chartRegion != 99)
+            {
+                chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
+            }
 
             //chart.Legends.Add(new Legend("Location"));
             //chart.Series["Data"].Legend = "Location";
@@ -595,8 +718,64 @@ namespace Dengue.Controllers
             XDocument urlXDoc = XDocument.Load(urlReadStream);
 
             return (string)urlXDoc.XPathSelectElement("/channel/main/forecast");
+        }
+    }
 
+    public static class ListExtension
+    {
+        public static double Mean(this List<double> values)
+        {
+            return values.Count == 0 ? 0 : values.Mean(0, values.Count);
+        }
 
+        public static double Mean(this List<double> values, int start, int end)
+        {
+            double s = 0;
+
+            for (int i = start; i < end; i++)
+            {
+                s += values[i];
+            }
+
+            return s / (end - start);
+        }
+
+        public static double Variance(this List<double> values)
+        {
+            return values.Variance(values.Mean(), 0, values.Count);
+        }
+
+        public static double Variance(this List<double> values, double mean)
+        {
+            return values.Variance(mean, 0, values.Count);
+        }
+
+        public static double Variance(this List<double> values, double mean, int start, int end)
+        {
+            double variance = 0;
+
+            for (int i = start; i < end; i++)
+            {
+                variance += Math.Pow((values[i] - mean), 2);
+            }
+
+            int n = end - start;
+            if (start > 0) n -= 1;
+
+            return variance / (n);
+        }
+
+        public static double StandardDeviation(this List<double> values)
+        {
+            return values.Count == 0 ? 0 : values.StandardDeviation(0, values.Count);
+        }
+
+        public static double StandardDeviation(this List<double> values, int start, int end)
+        {
+            double mean = values.Mean(start, end);
+            double variance = values.Variance(mean, start, end);
+
+            return Math.Sqrt(variance);
         }
     }
 }
