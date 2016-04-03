@@ -41,66 +41,35 @@ namespace Dengue.Controllers
             return View();
         }
 
-        public ActionResult DrawDengueHistoryChart()
-        {
-            IEnumerable<DengueCaseHistory> dengueHistory = DengueCHgateway.SelectAll();
-            int count = dengueHistory.Count();
-            int k = 0;
-            string[] x = new string[count];
-
-            int[] y = new int[count];
-
-            foreach (DengueCaseHistory DCH in dengueHistory)
-            {
-                x[k] = "W" + DCH.Epi_Week.ToString();
-                y[k] = DCH.No_of_Cases;
-                k++;
-            }
-
-            Chart chart = new Chart();
-            chart.Width = 360;
-            chart.Height = 270;
-
-            Title t = new Title();
-            t.Text = "Dengue Cases History Chart (as of 01/01/2016)";
-
-            chart.Titles.Add(t);
-
-            ChartArea ca = new ChartArea();
-            ca.AxisX.Title = "Week";
-            ca.AxisY.Title = "No. of Dengue Cases";
-            chart.ChartAreas.Add(ca);
-
-            Series dataS = new Series("Data");
-
-            dataS.ChartType = SeriesChartType.Column;
-
-            for (int i = 0; i < x.Length; i++)
-            {
-                dataS.Points.AddXY(x[i], y[i]);
-                dataS.Label = "#VALY";
-            }
-
-            chart.Series.Add(dataS);
-            // chart.Series["Data"].Points[chartRegion]["Exploded"] = "True";
-            
-            // chart.Legends.Add(new Legend("Location"));
-            //chart.Series["Data"].Legend = "Location";
-            // chart.Legends["Location"].Docking = Docking.Top;
-
-
-
-            chart.SaveImage(Server.MapPath("~/Content/DengueClusterRegionChart"), ChartImageFormat.Jpeg);
-            // Return the contents of the Stream to the client
-            return base.File(Server.MapPath("~/Content/DengueClusterRegionChart"), "jpeg");
-        }
-
         public ActionResult ContactUs()
         {
             ViewBag.contactedUs = "false";
 
             ViewBag.Message = "Your contact page.";
             ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ContactUs(string name, string contactNo, string email, string description)
+        {
+            ViewBag.contactedUs = "true";
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(email);
+                mail.To.Add("dengue@ttgy.sg");
+                mail.Subject = "Dengue Contact Us - New Case";
+                mail.Body = "Name: " + name + "<br><br>E-mail Address: " + email + "<br><br>Contact Number: " + contactNo + "<br><br>Description: <br><br>" + description;
+                mail.IsBodyHtml = true;
+
+                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
+                {
+                    smtp.Credentials = new NetworkCredential("dengue@ttgy.sg", "sexybeast123!");
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                    ViewBag.Data = "sent";
+                }
+            }
             return View();
         }
 
@@ -221,29 +190,6 @@ namespace Dengue.Controllers
 
             chart.SaveImage(Server.MapPath("~/Content/LineChart"), ChartImageFormat.Jpeg);
             return base.File(Server.MapPath("~/Content/LineChart"), "jpeg");
-        }
-
-        [HttpPost]
-        public ActionResult ContactUs(string name, string contactNo, string email, string description)
-        {
-            ViewBag.contactedUs = "true";
-            using (MailMessage mail = new MailMessage())
-            {
-                mail.From = new MailAddress(email);
-                mail.To.Add("dengue@ttgy.sg");
-                mail.Subject = "Dengue Contact Us - New Case";
-                mail.Body = "Name: " + name + "<br><br>E-mail Address: " + email + "<br><br>Contact Number: " + contactNo + "<br><br>Description: <br><br>" + description;
-                mail.IsBodyHtml = true;
-
-                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                {
-                    smtp.Credentials = new NetworkCredential("dengue@ttgy.sg", "sexybeast123!");
-                    smtp.EnableSsl = true;
-                    smtp.Send(mail);
-                    ViewBag.Data = "sent";
-                }
-            }
-            return View();
         }
 
         public ActionResult EvaluateArea(string weather)
@@ -707,9 +653,6 @@ namespace Dengue.Controllers
         }
         public string weatherForecast()
         {
-
-
-
             String url = "http://www.nea.gov.sg/api/WebAPI/?dataset=24hrs_forecast&keyref=781CF461BB6606AD4AF8F309C0CCE9941C98AB71D91D487D";
             HttpWebRequest urlRequest = (HttpWebRequest)WebRequest.Create(url);
             HttpWebResponse urlResponse = (HttpWebResponse)urlRequest.GetResponse();
@@ -743,11 +686,6 @@ namespace Dengue.Controllers
         public static double Variance(this List<double> values)
         {
             return values.Variance(values.Mean(), 0, values.Count);
-        }
-
-        public static double Variance(this List<double> values, double mean)
-        {
-            return values.Variance(mean, 0, values.Count);
         }
 
         public static double Variance(this List<double> values, double mean, int start, int end)
