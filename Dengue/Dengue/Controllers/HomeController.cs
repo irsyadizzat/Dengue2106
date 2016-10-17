@@ -29,7 +29,7 @@ namespace Dengue.Controllers
         // GET: DengueClusters
         public ActionResult Index()
         {
-            ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
+            //ViewData["noDengueCase"] = DengueClustergateway.getNoCases();
             //Weathergateway.getWeatherData();
             //DengueCHgateway.uploadDengueCH();
             //BHgateway.uploadBreedingHabitat();

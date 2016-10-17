@@ -1,4 +1,7 @@
-﻿@model IEnumerable<Dengue.Models.DengueCluster>
+﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script src="~/Scripts/DengueCluster.js"></script>
+
+@model IEnumerable<Dengue.Models.DengueCluster>
 
 @{
     ViewBag.Title = "Dengue Cluster";
@@ -16,42 +19,17 @@
     <div style="margin:0px 0px 15px 5px;">
         @using (Html.BeginForm())
         {
-            @Html.TextBox("search", "", new { placeholder = "Enter your search here" })
+            @Html.TextBox("search", "", new { placeholder = "Enter your search here", id="searchInput" })
             <input type="submit" name="search" value="Search" />
         }
     </div>
 
     <div style="overflow:auto; height:640px; margin-right:3px;">
-        <table class="table" style=" width:100%; " border="1">
-            <tr>
-                <th style="text-align:center;">
-                    @Html.DisplayNameFor(model => model.location)
-                </th>
-                <th style="text-align:center;">
-                    @Html.ActionLink("Number of Cases", "Index", new { sortCases = ViewBag.PriceSortParm })
+        
+        <div id="ResultPartialContainer">
+            @Html.Action("ResultPartial", "DengueClusters")
+        </div>
 
-                </th>
-                <th style="text-align:center;">
-                    View Cluster
-                </th>
-            </tr>
-
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td style="width:10%; max-width:530px;">
-                        @Html.DisplayFor(modelItem => item.location)
-                    </td>
-                    <td style="width:4%; text-align:center;">
-                        @Html.DisplayFor(modelItem => item.No_of_Cases)
-                    </td>
-                    <td style="width:4%; text-align:center;">
-                        <a href=@Html.DisplayFor(modelItem => item.Hyperlink) target="_blank">View</a>
-                    </td>
-                </tr>
-            }
-
-        </table>
     </div>
 
 </div>

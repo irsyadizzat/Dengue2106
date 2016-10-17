@@ -26,8 +26,10 @@ namespace Dengue.Controllers
             // ViewData["noDengueCase"] = denguecases;
 
             dengueClusterAll = DengueClustergateway.SelectAll();
+            //System.Diagnostics.Debug.WriteLine(dengueClusterAll);
             if (!string.IsNullOrWhiteSpace(search))
             {
+                //System.Diagnostics.Debug.WriteLine(search);
                 search = search.ToUpper();
                 dengueClusterAll = dengueClusterAll.Where(d => d.Description.ToUpper().Contains(search));
             }
@@ -49,7 +51,27 @@ namespace Dengue.Controllers
 
             setWeatherDropdown();
 
-            return View(dengueClusterAll);
+            return View();
+        }
+
+        // POST: getDengueClusterData
+        [HttpPost]
+        public ActionResult ResultPartial(string search) {
+            System.Diagnostics.Debug.WriteLine("hello2");
+            System.Diagnostics.Debug.WriteLine(search);
+            dengueClusterAll = DengueClustergateway.SelectAll();
+            //System.Diagnostics.Debug.WriteLine(dengueClusterAll);
+
+            search = search.ToUpper();
+            dengueClusterAll = dengueClusterAll.Where(d => d.Description.ToUpper().Contains(search));
+
+            return PartialView(dengueClusterAll);
+        }
+
+        public ActionResult ResultPartial()
+        {
+            dengueClusterAll = DengueClustergateway.SelectAll();
+            return PartialView(dengueClusterAll);
         }
 
         public void setWeatherDropdown()

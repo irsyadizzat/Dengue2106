@@ -6,6 +6,7 @@
     <title>@ViewBag.Title - Dengue Portal</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    
     <style>
         #toStyleDiv a {
             color:white;
@@ -99,7 +100,7 @@
                 <div style="height:330px;">
                     <div style="border-style:solid; height:165px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:2px;">
                         <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:16px; color: #282020;">
-                            Cases reported this week as of 16/02/2016:
+                            Cases reported this week:
                         </div>
                         <div style="color: #2a6496; font-size:35px; text-align:center; padding-top:20px;">
                             @Html.Action("WeekCasesPartial", "Home")
@@ -107,7 +108,7 @@
                     </div>
                     <div style="border-style:solid; height:165px; border-radius:8px; border: 1px solid #a09e9e; margin-bottom:2px;">
                         <div style="background-color: rgb(245,248,250); height:70px; text-align:center; padding-top:16px; color: #282020;">
-                            Cases reported this year as of 01/01/2016:
+                            Cases reported this year:
                         </div>
                         <div style="color: #2a6496; font-size:35px; text-align:center; padding-top:20px;">
                             @Html.Action("TotalCasesPartial", "Home")

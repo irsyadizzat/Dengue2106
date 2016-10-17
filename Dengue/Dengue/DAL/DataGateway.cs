@@ -37,9 +37,7 @@ namespace Dengue.DAL
 
         public IEnumerable<T> SelectAll()
         {
-
             return data;
-
         }
 
         public T SelectById(int? id)
